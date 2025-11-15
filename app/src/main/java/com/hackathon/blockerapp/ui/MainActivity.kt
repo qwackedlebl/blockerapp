@@ -160,6 +160,15 @@ class MainActivity : AppCompatActivity() {
             for (appInfo in installedApps) {
                 if (appInfo.packageName == packageName) continue
 
+                if(appInfo.packageName != "com.google.android.youtube" &&
+                    appInfo.packageName != "com.instagram.android" &&
+                    appInfo.packageName != "com.snapchat.android" &&
+                    appInfo.packageName != "com.musically.android"
+                ) {
+                    continue
+                }
+
+
                 val appName = packageManager.getApplicationLabel(appInfo).toString()
                 val packageName = appInfo.packageName
 
