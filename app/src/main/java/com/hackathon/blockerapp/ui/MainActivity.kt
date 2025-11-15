@@ -1,9 +1,12 @@
 package com.hackathon.blockerapp.ui
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
+import android.view.accessibility.AccessibilityManager
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,20 +29,37 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        PreferencesHelper.init(this)
+        verifyAccessibilityFramework()
+
         setupToolbar()
         setupRecyclerView()
-        checkPermissions()
         loadInstalledApps()
 
-        // Setup FAB for TOTP activity
         binding.fabTotp.setOnClickListener {
             startActivity(Intent(this, TotpActivity::class.java))
         }
     }
 
+    private fun verifyAccessibilityFramework() {
+        Log.d("AccessibilityVerification", "--- QUERYING PACKAGE MANAGER FOR ACCESSIBILITY SERVICES ---");
+        val packageManager = packageManager
+        val intent = Intent("android.accessibility.AccessibilityService")
+        val serviceInfos = packageManager.queryIntentServices(intent, PackageManager.MATCH_ALL)
+        if (serviceInfos.isEmpty()) {
+            Log.e("AccessibilityVerification", "CRITICAL: No services on the device can handle the AccessibilityService intent.")
+        } else {
+            Log.d("AccessibilityVerification", "Found ${serviceInfos.size} services capable of being an Accessibility Service:")
+            for (info in serviceInfos) {
+                Log.d("AccessibilityVerification", "  - Service: ${info.serviceInfo.name}, Package: ${info.serviceInfo.packageName}")
+            }
+        }
+        Log.d("AccessibilityVerification", "---------------------------------------------------------");
+    }
+
     override fun onResume() {
         super.onResume()
-        // Refresh permissions status
+        checkPermissions()
         updatePermissionStatus()
     }
 
@@ -66,10 +86,12 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermissions() {
         val missingPermissions = mutableListOf<String>()
 
+        if (!PermissionHelper.hasUsageAccessPermission(this)) {
+            missingPermissions.add("Usage Access")
+        }
         if (!PermissionHelper.hasOverlayPermission(this)) {
             missingPermissions.add("Overlay Permission")
         }
-
         if (!PermissionHelper.isAccessibilityServiceEnabled(this)) {
             missingPermissions.add("Accessibility Service")
         }
@@ -82,13 +104,19 @@ class MainActivity : AppCompatActivity() {
     private fun updatePermissionStatus() {
         val hasOverlay = PermissionHelper.hasOverlayPermission(this)
         val hasAccessibility = PermissionHelper.isAccessibilityServiceEnabled(this)
+        val hasUsageAccess = PermissionHelper.hasUsageAccessPermission(this)
+
+        Log.d("MainActivity", "Overlay permission: $hasOverlay")
+        Log.d("MainActivity", "Accessibility service enabled: $hasAccessibility")
+        Log.d("MainActivity", "Usage access permission: $hasUsageAccess")
 
         binding.permissionStatus.text = buildString {
             append("Status: ")
-            if (hasOverlay && hasAccessibility) {
+            if (hasOverlay && hasAccessibility && hasUsageAccess) {
                 append("✓ All permissions granted")
             } else {
                 append("⚠ Missing permissions")
+                if (!hasUsageAccess) append("\n• Usage Access")
                 if (!hasOverlay) append("\n• Overlay permission")
                 if (!hasAccessibility) append("\n• Accessibility service")
             }
@@ -97,19 +125,26 @@ class MainActivity : AppCompatActivity() {
 
     private fun showPermissionDialog(missingPermissions: List<String>) {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Permissions Required")
-            .setMessage("BlockerApp needs the following permissions:\n\n" +
-                    missingPermissions.joinToString("\n") +
-                    "\n\nWithout these, the app cannot block other apps.")
-            .setPositiveButton("Grant Permissions") { _, _ ->
-                if (!PermissionHelper.hasOverlayPermission(this)) {
-                    PermissionHelper.requestOverlayPermission(this)
-                } else if (!PermissionHelper.isAccessibilityServiceEnabled(this)) {
-                    PermissionHelper.requestAccessibilityPermission(this)
-                }
+            .setTitle("Permissions Required (${missingPermissions.size})")
+            .setMessage(
+                "BlockerApp needs the following permissions:\n\n" +
+                        missingPermissions.joinToString("\n• ", "• ") +
+                        "\n\nYou will be guided through each permission."
+            )
+            .setPositiveButton("Start Setup") { _, _ ->
+                requestNextPermission(missingPermissions)
             }
             .setNegativeButton("Later", null)
+            .setCancelable(false)
             .show()
+    }
+
+    private fun requestNextPermission(missingPermissions: List<String>) {
+        when (missingPermissions.firstOrNull()) {
+            "Usage Access" -> PermissionHelper.requestUsageAccessPermission(this)
+            "Overlay Permission" -> PermissionHelper.requestOverlayPermission(this)
+            "Accessibility Service" -> PermissionHelper.requestAccessibilityPermission(this)
+        }
     }
 
     private fun loadInstalledApps() {
@@ -123,13 +158,11 @@ class MainActivity : AppCompatActivity() {
             allApps.clear()
 
             for (appInfo in installedApps) {
-                // Skip system apps and our own app
                 if (appInfo.packageName == packageName) continue
 
                 val appName = packageManager.getApplicationLabel(appInfo).toString()
                 val packageName = appInfo.packageName
 
-                // Use saved state if exists, otherwise create new entry
                 val lockedApp = savedApps[packageName] ?: LockedApp(
                     packageName = packageName,
                     appName = appName
@@ -138,7 +171,6 @@ class MainActivity : AppCompatActivity() {
                 allApps.add(lockedApp)
             }
 
-            // Sort by app name
             allApps.sortBy { it.appName.lowercase() }
 
             runOnUiThread {
@@ -164,13 +196,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateApp(updatedApp: LockedApp) {
-        // Update local list
         val index = allApps.indexOfFirst { it.packageName == updatedApp.packageName }
         if (index != -1) {
             allApps[index] = updatedApp
         }
 
-        // Update saved apps
         val savedApps = PreferencesHelper.getLockedApps().toMutableList()
         val savedIndex = savedApps.indexOfFirst { it.packageName == updatedApp.packageName }
 
@@ -182,7 +212,6 @@ class MainActivity : AppCompatActivity() {
 
         PreferencesHelper.saveLockedApps(savedApps)
 
-        // Update adapter
         adapter.updateApps(allApps)
     }
 
@@ -206,4 +235,3 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 }
-
