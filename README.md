@@ -1,54 +1,270 @@
-GitHub Copilot: I'll help you design the architecture for this Android app. Let me break this down into a comprehensive plan covering the technical approach, tools, and implementation strategy.
+# 🔒 BlockerApp - Android App Locker with TOTP
 
-Created 4 todos
+A hackathon-ready Android application that locks installed apps behind manual or TOTP-based authentication. Built for speed and functionality over security.
 
-## Architecture Design for BlockerApp
+## 🚀 Features
 
-### **Core Technical Overview**
+### ✅ Basic App Locking
+- Display all installed apps in a searchable list
+- Toggle any app to lock/unlock it
+- Locked apps show a fullscreen blocking screen when launched
+- Manual unlock with temporary access (5 minutes)
 
-Your app concept is solid! Here's the complete architectural breakdown:
+### 🔐 TOTP-Based Locking
+- Generate random Base32 secret keys
+- Display 6-digit TOTP codes that update every 30 seconds
+- Import/export secret keys between devices
+- Two-device authentication workflow (Phone A ↔ Phone B)
+- Code verification with ±30 second tolerance
+
+## 📱 Quick Start
+
+### Prerequisites
+- Android Studio Arctic Fox or newer
+- Android device/emulator running API 26+ (Android 8.0+)
+- Basic knowledge of Android permissions
+
+### Installation
+
+1. **Clone/Open the Project**
+   ```bash
+   cd C:\Users\ilyas\StudioProjects\blockerapp
+   ```
+
+2. **Open in Android Studio**
+   - File > Open > Select `blockerapp` folder
+   - Wait for Gradle sync
+
+3. **Run the App**
+   - Click the "Run" button (or Shift+F10)
+   - Select your device/emulator
+
+4. **Grant Permissions**
+   - **Accessibility Service**: Settings > Accessibility > BlockerApp > Enable
+   - **Overlay Permission**: Settings > Apps > BlockerApp > Display over other apps > Allow
+
+## 📖 Usage Guide
+
+### Locking an App (Manual Mode)
+
+1. Open BlockerApp
+2. Find the app you want to lock (e.g., Instagram)
+3. Toggle the switch ON
+4. Try opening Instagram → Blocking screen appears
+5. Click "Unlock App" to temporarily unlock (5 min)
+
+### TOTP Setup (Two-Device Mode)
+
+**On Phone B (Code Generator):**
+1. Open BlockerApp
+2. Tap the key icon (floating button)
+3. Tap "Generate" → Copy the secret key
+4. Send via SMS to Phone A
+5. View the current 6-digit code
+
+**On Phone A (Protected Device):**
+1. Open BlockerApp
+2. Toggle the app lock ON
+3. Tap the settings icon next to the app
+4. Paste the secret key from Phone B
+5. Tap "Import from Field"
+6. Tap "Enable TOTP"
+
+**To Unlock:**
+1. Try opening the locked app
+2. Get current code from Phone B
+3. Enter the code on Phone A
+4. Tap "Verify & Unlock"
+
+## 🏗️ Architecture
+
+### Tech Stack
+- **Language**: Kotlin
+- **UI**: Material Design 3, ViewBinding
+- **Storage**: SharedPreferences + Gson (JSON)
+- **TOTP**: Apache Commons Codec (Base32 + HMAC-SHA1)
+- **Monitoring**: AccessibilityService
+
+### Key Components
+
+| Component | Purpose |
+|-----------|---------|
+| `AccessibilityService` | Detects app launches in real-time |
+| `BlockerOverlayActivity` | Fullscreen lock screen |
+| `TotpManager` | Generate/verify 6-digit codes |
+| `PreferencesHelper` | Persist locked apps and secrets |
+| `MainActivity` | App list with lock toggles |
+
+### Data Flow
+
+```
+User opens locked app
+    ↓
+AccessibilityService detects launch
+    ↓
+Check if app is in locked list
+    ↓
+Launch BlockerOverlayActivity (fullscreen)
+    ↓
+User enters TOTP code (or clicks unlock)
+    ↓
+Verify code → Unlock temporarily
+    ↓
+Return to home screen
+```
+
+## 📂 Project Structure
+
+```
+app/src/main/
+├── java/com/hackathon/blockerapp/
+│   ├── BlockerApplication.kt
+│   ├── models/
+│   │   └── LockedApp.kt
+│   ├── service/
+│   │   └── AppBlockerAccessibilityService.kt
+│   ├── ui/
+│   │   ├── MainActivity.kt
+│   │   ├── BlockerOverlayActivity.kt
+│   │   ├── TotpActivity.kt
+│   │   └── adapters/
+│   │       └── AppListAdapter.kt
+│   └── utils/
+│       ├── TotpManager.kt
+│       ├── PreferencesHelper.kt
+│       └── PermissionHelper.kt
+├── res/
+│   ├── layout/
+│   │   ├── activity_main.xml
+│   │   ├── activity_blocker_overlay.xml
+│   │   ├── activity_totp.xml
+│   │   └── item_app.xml
+│   ├── drawable/
+│   │   ├── ic_lock.xml
+│   │   ├── ic_lock_open.xml
+│   │   ├── ic_key.xml
+│   │   └── ic_settings.xml
+│   └── xml/
+│       └── accessibility_service_config.xml
+└── AndroidManifest.xml
+```
+
+## 🎯 Implementation Roadmap (24 Hours)
+
+| Phase | Hours | Deliverable |
+|-------|-------|-------------|
+| **Setup & Basic UI** | 0-3 | App list with toggles |
+| **Locking Mechanism** | 3-8 | AccessibilityService + Blocker screen |
+| **TOTP Foundation** | 8-12 | Secret generation + code display |
+| **TOTP Integration** | 12-16 | Code verification + app linking |
+| **Polish & Testing** | 16-22 | Search, permissions, bug fixes |
+| **Demo Prep** | 22-24 | Testing, documentation |
+
+## ⚡ Hackathon Shortcuts
+
+To meet the 24-hour deadline, this app uses several "bad practice" shortcuts:
+
+1. ❌ **No Encryption**: Secrets stored in plain SharedPreferences
+2. ❌ **No Input Validation**: Assumes users enter valid data
+3. ❌ **Global Context**: `BlockerApplication.instance` used everywhere
+4. ❌ **No Unit Tests**: Zero test coverage
+5. ❌ **Hardcoded Values**: 30-second TOTP window, 5-minute unlock
+6. ❌ **Minimal Error Handling**: Crashes reveal bugs quickly
+
+**⚠️ DO NOT USE IN PRODUCTION!**
+
+## 🐛 Known Issues
+
+- Can be bypassed by disabling accessibility service
+- Battery drain from continuous monitoring
+- No encryption for stored secrets
+- Requires manual permission setup
+- Some devices kill the service aggressively
+
+## 🔧 Troubleshooting
+
+### "App doesn't block anything"
+→ Enable Accessibility Service in Settings
+
+### "TOTP codes don't match"
+→ Ensure both devices have correct time (auto-sync enabled)
+
+### "Service keeps stopping"
+→ Add to battery optimization whitelist
+
+### Build errors
+```bash
+./gradlew clean
+./gradlew build
+```
+
+## 📚 Documentation
+
+- **[ARCHITECTURE.md](ARCHITECTURE.md)**: Detailed architecture and design decisions
+- **[IMPLEMENTATION.md](IMPLEMENTATION.md)**: Step-by-step implementation guide
+- **[prompt.md](prompt.md)**: Original requirements
+
+## 🧪 Testing
+
+```bash
+# Manual test checklist
+- [ ] List apps
+- [ ] Lock an app
+- [ ] App shows blocker screen
+- [ ] Manual unlock works
+- [ ] Generate secret key
+- [ ] Copy to clipboard
+- [ ] Import secret key
+- [ ] TOTP code updates
+- [ ] Enable TOTP for app
+- [ ] Verify code unlocks app
+- [ ] Search works
+```
+
+## 📦 Dependencies
+
+```gradle
+// Core Android
+androidx.core:core-ktx:1.12.0
+androidx.appcompat:appcompat:1.6.1
+com.google.android.material:material:1.11.0
+
+// JSON parsing
+com.google.code.gson:gson:2.10.1
+
+// TOTP (Base32 + HMAC)
+commons-codec:commons-codec:1.16.0
+```
+
+## 🎓 Learning Resources
+
+- [RFC 6238 - TOTP Specification](https://tools.ietf.org/html/rfc6238)
+- [Android Accessibility Service](https://developer.android.com/guide/topics/ui/accessibility/service)
+- [Material Design 3](https://m3.material.io/)
+
+## 🚀 Future Enhancements
+
+- [ ] Use Android Keystore for encryption
+- [ ] QR code generation for secret sharing
+- [ ] Biometric authentication
+- [ ] App usage statistics
+- [ ] Custom unlock durations
+- [ ] Export/import settings
+- [ ] Dark theme
+
+## 👥 Contributing
+
+This is a hackathon project - feel free to fork and improve!
+
+## 📄 License
+
+MIT License - Use freely for hackathons and learning!
 
 ---
 
-## **1. Technical Approach & Key Components**
-
-### **Phone A (Blocker Device) - Main Components:**
-
-1. **App Locking Service**
-   - Uses **AccessibilityService** API to detect when locked apps are launched
-   - Displays an overlay screen to block access
-   - Requires TOTP code to dismiss
-
-2. **Usage Stats Monitor**
-   - Uses **UsageStatsManager** to track app launches
-   - Requires `PACKAGE_USAGE_STATS` permission
-
-3. **Overlay Lock Screen**
-   - Custom Activity with `TYPE_APPLICATION_OVERLAY` window
-   - TOTP input interface
-   - Verification logic
-
-4. **Shared Secret Storage**
-   - Stores the TOTP secret key (shared with Phone B)
-   - Uses Android **Keystore** for secure storage
-
-### **Phone B (Key Generator Device) - Main Components:**
-
-1. **TOTP Generator**
-   - Generates 6-digit codes every 30 seconds
-   - Uses same secret key as Phone A
-   - Simple UI displaying current code
-
-2. **Secret Key Management**
-   - Initial pairing mechanism (QR code or manual entry)
-   - Secure storage of shared secret
-
----
-
-## **2. TOTP Implementation (Time-based One-Time Password)**
-
-You're essentially building a simplified 2FA system! Here's how:
-
+**Built for a 24-hour hackathon** 🏆
+**Focus**: Working code over clean code ⚡
+**Status**: Feature-complete MVP ✅
 ### **Algorithm: TOTP (RFC 6238)**
 - **Library**: Use `commons-codec` or `Google Authenticator-compatible` libraries
 - **Key**: 160-bit secret key shared between devices

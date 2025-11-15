@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BlockerApp</string>
+    <string name="totp_title">TOTP Manager</string>
+    <string name="totp_manager">TOTP Manager</string>
+    <string name="app_locked">App Locked</string>
+    <string name="unlock_app">Unlock App</string>
+    <string name="enter_code">Enter 6-digit code</string>
+    <string name="verify_unlock">Verify &amp; Unlock</string>
+    <string name="current_code">Current Code:</string>
+    <string name="secret_key">Secret Key</string>
+    <string name="secret_key_hint">Base32 encoded secret</string>
+    <string name="generate">Generate</string>
+    <string name="copy">Copy</string>
+    <string name="import_secret">Import Secret Key</string>
+    <string name="import_description">Paste a secret key in the field above, then click Import</string>
+    <string name="import_from_field">Import from Field</string>
+    <string name="enable_totp">Enable TOTP</string>
+    <string name="totp_status">TOTP Status</string>
+    <string name="configure_totp">Configure TOTP</string>
+    <string name="action_search">Search</string>
+    <string name="accessibility_service_description">BlockerApp uses this service to detect when locked apps are opened and display a blocking screen. No data is collected or transmitted.</string>
+</resources>
+

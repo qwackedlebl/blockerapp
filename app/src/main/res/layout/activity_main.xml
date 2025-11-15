@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        app:srcCompat="@drawable/ic_key" />
+        android:contentDescription="@string/totp_manager"
+        android:layout_margin="16dp"
+        android:layout_gravity="bottom|end"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/fabTotp"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+
+    </LinearLayout>
+
+        </FrameLayout>
+
+                android:visibility="gone" />
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/progressBar"
+            <ProgressBar
+
+                android:paddingBottom="80dp" />
+                android:clipToPadding="false"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:id="@+id/recyclerView"
+            <androidx.recyclerview.widget.RecyclerView
+
+            android:layout_height="match_parent">
+            android:layout_width="match_parent"
+        <FrameLayout
+
+        </com.google.android.material.card.MaterialCardView>
+
+                android:textSize="14sp" />
+                android:text="Checking permissions..."
+                android:padding="16dp"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:id="@+id/permissionStatus"
+            <TextView
+
+            app:cardElevation="2dp">
+            android:layout_margin="16dp"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+        <com.google.android.material.card.MaterialCardView
+
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+    <LinearLayout
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+            app:title="BlockerApp" />
+            android:layout_height="?attr/actionBarSize"
+            android:layout_width="match_parent"
+            android:id="@+id/toolbar"
+        <com.google.android.material.appbar.MaterialToolbar
+
+        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+    <com.google.android.material.appbar.AppBarLayout
+
+    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+

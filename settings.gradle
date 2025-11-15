@@ -1,0 +1,17 @@
+pluginManagement {
+include ':app'
+rootProject.name = "BlockerApp"
+}
+    }
+        mavenCentral()
+        google()
+    repositories {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+dependencyResolutionManagement {
+}
+    }
+        gradlePluginPortal()
+        mavenCentral()
+        google()
+    repositories {
+
