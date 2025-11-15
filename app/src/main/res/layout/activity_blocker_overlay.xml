@@ -1,111 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-</LinearLayout>
-
-        android:visibility="gone" />
-        android:text="@string/unlock_app"
-        android:layout_marginTop="24dp"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:id="@+id/manualUnlockButton"
-    <com.google.android.material.button.MaterialButton
-    <!-- Manual Unlock Button -->
-
-    </LinearLayout>
-
-            android:visibility="gone" />
-            android:textSize="12sp"
-            android:textColor="@android:color/holo_green_light"
-            android:text="Debug: 123456"
-            android:layout_marginTop="16dp"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:id="@+id/currentCode"
-        <TextView
-
-            android:text="@string/verify_unlock" />
-            android:layout_marginTop="16dp"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:id="@+id/verifyButton"
-        <com.google.android.material.button.MaterialButton
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-                android:textSize="24sp" />
-                android:textAlignment="center"
-                android:maxLength="6"
-                android:inputType="number"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:id="@+id/codeInput"
-            <com.google.android.material.textfield.TextInputEditText
-
-            app:boxBackgroundColor="@android:color/white">
-            android:hint="@string/enter_code"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-        <com.google.android.material.textfield.TextInputLayout
-
-        android:visibility="gone">
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_marginTop="24dp"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:id="@+id/totpInputLayout"
-    <LinearLayout
-    <!-- TOTP Input Section -->
-
-        android:textSize="16sp" />
-        android:textColor="@android:color/white"
-        android:text="This app is locked."
-        android:gravity="center"
-        android:layout_marginTop="32dp"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:id="@+id/unlockMessage"
-    <TextView
-
-        android:textSize="14sp" />
-        android:textColor="@android:color/darker_gray"
-        android:text="com.example.app"
-        android:layout_marginTop="4dp"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:id="@+id/blockedPackageName"
-    <TextView
-
-        android:textSize="18sp" />
-        android:textColor="@android:color/white"
-        android:text="App Name"
-        android:layout_marginTop="8dp"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:id="@+id/blockedAppName"
-    <TextView
-
-        android:textStyle="bold" />
-        android:textSize="24sp"
-        android:textColor="@android:color/white"
-        android:text="@string/app_locked"
-        android:layout_marginTop="24dp"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-    <TextView
-
-        app:tint="@android:color/white" />
-        android:src="@drawable/ic_lock"
-        android:contentDescription="@string/app_locked"
-        android:layout_height="80dp"
-        android:layout_width="80dp"
-    <ImageView
-
-    android:padding="32dp">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="center"
     android:background="@android:color/black"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:padding="32dp">
 
+    <!-- Lock Icon -->
+    <ImageView
+        android:id="@+id/lockIcon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/ic_lock"
+        android:contentDescription="@string/app_locked"
+        app:tint="@android:color/white" />
+
+    <!-- App Locked Message -->
+    <TextView
+        android:id="@+id/appLockedText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_locked"
+        android:textSize="24sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp" />
+
+    <!-- Blocked App Name -->
+    <TextView
+        android:id="@+id/blockedAppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="App Name"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="8dp" />
+
+    <!-- Blocked Package Name -->
+    <TextView
+        android:id="@+id/blockedPackageName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="com.example.app"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="4dp" />
+
+    <!-- Unlock Message -->
+    <TextView
+        android:id="@+id/unlockMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This app is locked."
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:layout_marginTop="32dp" />
+
+    <!-- Manual Unlock Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/manualUnlockButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/unlock_app"
+        android:layout_marginTop="24dp"
+        android:visibility="gone" />
+
+    <!-- Current Code Text -->
+    <TextView
+        android:id="@+id/currentCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Debug: 123456"
+        android:textSize="12sp"
+        android:textColor="@android:color/holo_green_light"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
+
+    <!-- Verify Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/verifyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/verify_unlock"
+        android:layout_marginTop="16dp" />
+
+    <!-- TOTP Input Layout -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/totpInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        android:visibility="gone">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/codeInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_code"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:inputType="number"
+            android:maxLength="6"
+            app:boxBackgroundColor="@android:color/white" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>
