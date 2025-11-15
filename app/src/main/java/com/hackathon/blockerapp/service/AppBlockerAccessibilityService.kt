@@ -37,17 +37,14 @@ class AppBlockerAccessibilityService : AccessibilityService() {
                 lastBlockedPackage = packageName
                 lastBlockTime = currentTime
 
-                // Launch blocking overlay
+                // Launch blocking overlay - this will cover the blocked app
                 val intent = Intent(this, BlockerOverlayActivity::class.java).apply {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
                     putExtra("blocked_package", packageName)
                 }
                 startActivity(intent)
-
-                // Return to home screen
-                performGlobalAction(GLOBAL_ACTION_HOME)
             }
         }
     }
