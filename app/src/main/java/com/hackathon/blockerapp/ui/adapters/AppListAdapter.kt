@@ -13,8 +13,7 @@ import com.hackathon.blockerapp.models.LockedApp
 
 class AppListAdapter(
     private var apps: List<LockedApp>,
-    private val onLockToggle: (LockedApp, Boolean) -> Unit,
-    private val onTotpClick: (LockedApp) -> Unit
+    private val onLockToggle: (LockedApp, Boolean) -> Unit
 ) : RecyclerView.Adapter<AppListAdapter.AppViewHolder>(), Filterable {
 
     private var filteredApps: List<LockedApp> = apps
@@ -23,7 +22,7 @@ class AppListAdapter(
         val appName: TextView = view.findViewById(R.id.appName)
         val packageName: TextView = view.findViewById(R.id.packageName)
         val lockButton: MaterialButton = view.findViewById(R.id.lockButton)
-        val totpButton: View = view.findViewById(R.id.totpButton)
+        val lockDescription: TextView = view.findViewById(R.id.lockDescription)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
@@ -38,25 +37,20 @@ class AppListAdapter(
         holder.appName.text = app.appName
         holder.packageName.text = app.packageName
 
-        // Set lock button icon state (locked/unlocked)
+        // Set lock button icon state and description text
         if (app.isLocked) {
             holder.lockButton.icon = holder.itemView.context.getDrawable(R.drawable.ic_lock)
             holder.lockButton.alpha = 1.0f
+            holder.lockDescription.text = "Locked"
         } else {
             holder.lockButton.icon = holder.itemView.context.getDrawable(R.drawable.ic_lock_open)
             holder.lockButton.alpha = 0.8f
+            holder.lockDescription.text = "Unlocked"
         }
 
         holder.lockButton.setOnClickListener {
             val newState = !app.isLocked
             onLockToggle(app, newState)
-        }
-
-        // Show TOTP button only if app is locked
-        holder.totpButton.visibility = if (app.isLocked) View.VISIBLE else View.GONE
-
-        holder.totpButton.setOnClickListener {
-            onTotpClick(app)
         }
     }
 

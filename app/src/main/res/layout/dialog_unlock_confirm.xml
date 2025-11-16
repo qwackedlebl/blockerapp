@@ -14,18 +14,25 @@
         android:textSize="16sp"
         android:paddingBottom="12dp" />
 
-    <EditText
-        android:id="@+id/codeInput"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/codeInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:maxLength="6"
-        android:hint="123456"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textSize="20sp"
-        android:importantForAutofill="no"
-        android:autofillHints="" />
+        android:hint="Enter 6-digit code">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/codeInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="6"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:importantForAutofill="no"
+            android:autofillHints="" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/errorText"
@@ -37,7 +44,3 @@
         android:paddingTop="8dp" />
 
 </LinearLayout>
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main

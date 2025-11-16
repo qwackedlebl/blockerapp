@@ -48,35 +48,40 @@
 
         </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/totpButton"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginEnd="8dp"
-            android:contentDescription="@string/configure_totp"
-            android:visibility="gone"
-            app:icon="@drawable/ic_settings" />
+            android:orientation="vertical"
+            android:gravity="center">
 
-        <!-- Clickable MaterialButton showing lock/unlock icon inside a gray button with shadow -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/lockButton"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="8dp"
-            android:contentDescription="@string/lock_state"
-            app:icon="@drawable/ic_lock_open"
-            app:iconTint="@android:color/black"
-            app:iconGravity="textStart"
-            android:padding="6dp"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            app:backgroundTint="#E0E0E0"
-            android:elevation="6dp"
-            android:backgroundTintMode="src_over" />
+            <!-- Clickable MaterialButton showing lock/unlock icon inside a gray button with shadow -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/lockButton"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="@string/lock_state"
+                app:icon="@drawable/ic_lock_open"
+                app:iconTint="@android:color/black"
+                app:iconGravity="textStart"
+                android:padding="6dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                app:backgroundTint="#E0E0E0"
+                android:elevation="6dp"
+                android:backgroundTintMode="src_over" />
+
+            <TextView
+                android:id="@+id/lockDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Unlocked"
+                android:textSize="11sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginTop="2dp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

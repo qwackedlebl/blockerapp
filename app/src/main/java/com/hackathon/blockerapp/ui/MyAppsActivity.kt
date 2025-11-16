@@ -10,9 +10,9 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.EditText
 import android.widget.SearchView
 import android.widget.TextView
+import com.google.android.material.textfield.TextInputEditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -106,9 +106,6 @@ class MyAppsActivity : AppCompatActivity() {
             apps = emptyList(),
             onLockToggle = { app, isLocked ->
                 handleLockToggle(app, isLocked)
-            },
-            onTotpClick = { app ->
-                handleTotpClick(app)
             }
         )
 
@@ -255,7 +252,7 @@ class MyAppsActivity : AppCompatActivity() {
 
     private fun showUnlockDialog(app: LockedApp) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_unlock_confirm, null)
-        val codeInput = dialogView.findViewById<EditText>(R.id.codeInput)
+        val codeInput = dialogView.findViewById<TextInputEditText>(R.id.codeInput)
         val errorText = dialogView.findViewById<TextView>(R.id.errorText)
         val originalColor = codeInput.currentTextColor
 
@@ -305,7 +302,7 @@ class MyAppsActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun showFailureAnimation(codeInput: EditText, errorText: TextView, message: String) {
+    private fun showFailureAnimation(codeInput: TextInputEditText, errorText: TextView, message: String) {
         errorText.text = message
         errorText.visibility = View.VISIBLE
         codeInput.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
@@ -328,16 +325,6 @@ class MyAppsActivity : AppCompatActivity() {
         set.playTogether(shake, fade)
         set.duration = 200
         set.start()
-    }
-
-    private fun handleTotpClick(app: LockedApp) {
-        val intent = Intent(this, TotpActivity::class.java).apply {
-            putExtra("package_name", app.packageName)
-            putExtra("app_name", app.appName)
-            putExtra("secret_key", app.secretKey)
-            putExtra("totp_enabled", app.isTotpEnabled)
-        }
-        startActivity(intent)
     }
 
     private fun updateApp(updatedApp: LockedApp) {

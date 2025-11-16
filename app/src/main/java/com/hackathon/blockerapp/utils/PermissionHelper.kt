@@ -18,11 +18,26 @@ object PermissionHelper {
     }
 
     fun requestOverlayPermission(activity: Activity) {
-        val intent = Intent(
-            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-            Uri.parse("package:${activity.packageName}")
-        )
-        activity.startActivity(intent)
+        try {
+            // Try to open app-specific overlay permission settings
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+            intent.data = Uri.parse("package:${activity.packageName}")
+            Toast.makeText(
+                activity,
+                "Enable \"Display over other apps\" permission for BlockerApp",
+                Toast.LENGTH_LONG
+            ).show()
+            activity.startActivity(intent)
+        } catch (e: Exception) {
+            // Fallback to general settings if app-specific doesn't work
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+            Toast.makeText(
+                activity,
+                "Find and enable BlockerApp in the list",
+                Toast.LENGTH_LONG
+            ).show()
+            activity.startActivity(intent)
+        }
     }
 
     fun isAccessibilityServiceEnabled(context: Context): Boolean {

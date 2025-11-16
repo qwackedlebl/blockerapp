@@ -7,7 +7,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -18,7 +17,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -29,7 +27,6 @@ import com.hackathon.blockerapp.databinding.ActivityMainBinding
 import com.hackathon.blockerapp.models.SecretKeyEntry
 import com.hackathon.blockerapp.ui.adapters.AccountabilityPartnerAdapter
 import com.hackathon.blockerapp.utils.PreferencesHelper
-import com.hackathon.blockerapp.utils.TotpManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -311,6 +308,14 @@ class MainActivity : AppCompatActivity() {
 
         dialog.setOnShowListener {
             val saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            val buttonPanel = saveButton.parent as? ViewGroup
+            buttonPanel?.setPadding(
+                buttonPanel.paddingLeft,
+                0,
+                buttonPanel.paddingRight,
+                8
+            )
+
             saveButton.setOnClickListener {
                 val name = nameInput.text.toString().trim()
                 val secretKey = secretKeyInput.text.toString().trim()
@@ -356,8 +361,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Validation 3: Check if secret key is valid Base32 format
-        val validSecretPattern = "^[A-Z2-7]+$".toRegex()
-        if (!secretKey.matches(validSecretPattern)) {
+        if (!secretKey.matches("""^[a-zA-Z0-9-]+$""".toRegex())) {
             secretKeyInputLayout.error = "Invalid secret key format (use A-Z and 2-7)"
             Log.w(TAG, "Invalid secret key format: $secretKey")
             return false
