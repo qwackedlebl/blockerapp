@@ -1,20 +1,30 @@
 package com.hackathon.blockerapp.ui
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import android.widget.SearchView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hackathon.blockerapp.R
 import com.hackathon.blockerapp.databinding.ActivityMyAppsBinding
 import com.hackathon.blockerapp.models.LockedApp
 import com.hackathon.blockerapp.ui.adapters.AppListAdapter
 import com.hackathon.blockerapp.utils.PermissionHelper
 import com.hackathon.blockerapp.utils.PreferencesHelper
+import com.hackathon.blockerapp.utils.TotpManager
 
 class MyAppsActivity : AppCompatActivity() {
 
@@ -221,8 +231,103 @@ class MyAppsActivity : AppCompatActivity() {
     }
 
     private fun handleLockToggle(app: LockedApp, isLocked: Boolean) {
-        val updatedApp = app.copy(isLocked = isLocked)
-        updateApp(updatedApp)
+        if (isLocked && !app.isLocked) {
+            // Confirm before locking an app
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Lock this app?")
+                .setMessage("You will need to unlock it to use it. Do you want to continue?")
+                .setPositiveButton("Lock") { _, _ ->
+                    // Ensure a secret exists so future unlock requires code
+                    val newSecret = if (app.secretKey.isNullOrEmpty()) TotpManager.generateSecretKey() else app.secretKey
+                    val updatedApp = app.copy(isLocked = true, secretKey = newSecret)
+                    updateApp(updatedApp)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        } else if (!isLocked && app.isLocked) {
+            // Unlock requires confirmation code ALWAYS
+            showUnlockDialog(app)
+        } else {
+            val updatedApp = app.copy(isLocked = isLocked)
+            updateApp(updatedApp)
+        }
+    }
+
+    private fun showUnlockDialog(app: LockedApp) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_unlock_confirm, null)
+        val codeInput = dialogView.findViewById<EditText>(R.id.codeInput)
+        val errorText = dialogView.findViewById<TextView>(R.id.errorText)
+        val originalColor = codeInput.currentTextColor
+
+        codeInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                errorText.visibility = View.GONE
+                codeInput.setTextColor(originalColor)
+                codeInput.alpha = 1f
+                codeInput.translationX = 0f
+            }
+        })
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .setPositiveButton("Unlock", null)
+            .setNegativeButton("Cancel", null)
+            .create()
+
+        dialog.setOnShowListener {
+            val positive = dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+            positive.setOnClickListener {
+                val entered = codeInput.text.toString().trim()
+                val allDigits = entered.length == 6 && entered.all { it.isDigit() }
+                if (!allDigits) {
+                    showFailureAnimation(codeInput, errorText, "Enter 6 digits")
+                    return@setOnClickListener
+                }
+                val secret = app.secretKey
+                if (secret.isNullOrEmpty()) {
+                    showFailureAnimation(codeInput, errorText, "TOTP not configured")
+                    return@setOnClickListener
+                }
+                val reversed = entered.reversed()
+                val valid = TotpManager.verifyCode(secret, reversed)
+                if (valid) {
+                    dialog.dismiss()
+                    updateApp(app.copy(isLocked = false))
+                } else {
+                    showFailureAnimation(codeInput, errorText, "Invalid code")
+                }
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun showFailureAnimation(codeInput: EditText, errorText: TextView, message: String) {
+        errorText.text = message
+        errorText.visibility = View.VISIBLE
+        codeInput.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
+
+        // Shake animation with sequence of translations
+        val shake = AnimatorSet()
+        shake.playSequentially(
+            ObjectAnimator.ofFloat(codeInput, "translationX", 0f, -20f),
+            ObjectAnimator.ofFloat(codeInput, "translationX", -20f, 20f),
+            ObjectAnimator.ofFloat(codeInput, "translationX", 20f, -15f),
+            ObjectAnimator.ofFloat(codeInput, "translationX", -15f, 15f),
+            ObjectAnimator.ofFloat(codeInput, "translationX", 15f, 0f)
+        )
+
+        // Fade animation
+        val fade = ObjectAnimator.ofFloat(codeInput, "alpha", 1f, 0.3f, 1f)
+        fade.duration = 200
+
+        val set = AnimatorSet()
+        set.playTogether(shake, fade)
+        set.duration = 200
+        set.start()
     }
 
     private fun handleTotpClick(app: LockedApp) {
