@@ -70,6 +70,16 @@
             android:layout_marginBottom="12dp" />
 
         <TextView
+            android:id="@+id/nav_accountability_partners"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Accountability Partners"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground" />
+
+        <TextView
             android:id="@+id/nav_my_apps"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

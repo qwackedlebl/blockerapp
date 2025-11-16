@@ -72,19 +72,27 @@ class MainActivity : AppCompatActivity() {
             binding.leftDrawer.requestLayout()
         }
 
+        binding.navAccountabilityPartners.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            // Already on this page
+        }
+
         binding.navMyApps.setOnClickListener {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
             startActivity(Intent(this, MyAppsActivity::class.java))
+            finish()
         }
 
         binding.navManagePartners.setOnClickListener {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
             startActivity(Intent(this, FriendsActivity::class.java))
+            finish()
         }
 
         binding.navHowItWorks.setOnClickListener {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
             startActivity(Intent(this, HowItWorksActivity::class.java))
+            finish()
         }
     }
 
