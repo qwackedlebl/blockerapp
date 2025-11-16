@@ -24,12 +24,14 @@ class AppBlockerAccessibilityService : AccessibilityService() {
                 return
             }
 
+            Log.d(TAG, "Foreground app: $packageName")
+
             // Prevent blocking the same app multiple times rapidly
             val currentTime = System.currentTimeMillis()
             if (packageName == lastBlockedPackage && currentTime - lastBlockTime < 1000) {
                 return
             }
-
+            Log.d(TAG, "app event triggered.")
             // Check if this app should be blocked
             if (PreferencesHelper.isLocked(packageName)) {
                 Log.d(TAG, "Blocking app: $packageName")
