@@ -60,34 +60,6 @@
         android:gravity="center"
         android:layout_marginTop="32dp" />
 
-    <!-- Manual Unlock Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/manualUnlockButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/unlock_app"
-        android:layout_marginTop="24dp"
-        android:visibility="gone" />
-
-    <!-- Current Code Text -->
-    <TextView
-        android:id="@+id/currentCode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Debug: 123456"
-        android:textSize="12sp"
-        android:textColor="@android:color/holo_green_light"
-        android:layout_marginTop="16dp"
-        android:visibility="gone" />
-
-    <!-- Verify Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/verifyButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/verify_unlock"
-        android:layout_marginTop="16dp" />
-
     <!-- TOTP Input Layout -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/totpInputLayout"
@@ -96,6 +68,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:layout_marginTop="24dp"
+        app:errorEnabled="true"
         android:visibility="gone">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -110,5 +83,24 @@
             app:boxBackgroundColor="@android:color/white" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Verify Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/verifyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/verify_unlock"
+        android:layout_marginTop="16dp" />
+
+    <!-- Current Code Text -->
+    <TextView
+        android:id="@+id/currentCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Debug: 123456"
+        android:textSize="12sp"
+        android:textColor="@android:color/holo_green_light"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
 
 </LinearLayout>

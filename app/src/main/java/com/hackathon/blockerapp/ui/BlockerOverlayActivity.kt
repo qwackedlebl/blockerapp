@@ -61,7 +61,6 @@ class BlockerOverlayActivity : AppCompatActivity() {
 
     private fun setupTotpMode(secretKey: String) {
         binding.totpInputLayout.visibility = android.view.View.VISIBLE
-        binding.manualUnlockButton.visibility = android.view.View.VISIBLE
 
         binding.unlockMessage.text = "This app is locked.\nEnter the 6-digit code from your accountability partner's device."
 
@@ -71,14 +70,45 @@ class BlockerOverlayActivity : AppCompatActivity() {
         binding.verifyButton.setOnClickListener {
             val inputCode = binding.codeInput.text.toString()
 
+            // Clear previous errors
+            binding.totpInputLayout.error = null
+
+            // Validate input
+            if (!validateCode(inputCode)) {
+                return@setOnClickListener
+            }
+
+            // Verify TOTP code
             if (TotpManager.verifyCode(secretKey, inputCode)) {
                 unlockApp()
             } else {
-                Toast.makeText(this, "Invalid code", Toast.LENGTH_SHORT).show()
+                binding.totpInputLayout.error = "Invalid code"
                 binding.codeInput.setText("")
                 binding.codeInput.requestFocus()
             }
         }
+    }
+
+    private fun validateCode(code: String): Boolean {
+        // Validation 1: Check if empty
+        if (code.isEmpty()) {
+            binding.totpInputLayout.error = "Code is required"
+            return false
+        }
+
+        // Validation 2: Check if digits only
+        if (!code.matches("^[0-9]+$".toRegex())) {
+            binding.totpInputLayout.error = "Code must contain digits only"
+            return false
+        }
+
+        // Validation 3: Check if too short
+        if (code.length < 6) {
+            binding.totpInputLayout.error = "Code is too short (6 digits required)"
+            return false
+        }
+
+        return true
     }
 
     private fun updateTotpDisplay(secretKey: String) {
@@ -98,14 +128,10 @@ class BlockerOverlayActivity : AppCompatActivity() {
 
     private fun setupManualMode() {
         binding.totpInputLayout.visibility = android.view.View.GONE
-        binding.manualUnlockButton.visibility = android.view.View.VISIBLE
+        binding.verifyButton.visibility = android.view.View.GONE
         binding.currentCode.visibility = android.view.View.GONE
 
-        binding.unlockMessage.text = "This app is locked.\nClick below to unlock."
-
-        binding.manualUnlockButton.setOnClickListener {
-            unlockApp()
-        }
+        binding.unlockMessage.text = "This app is locked.\nDevice secret key not initialized.\nPlease configure the app first."
     }
 
     private fun unlockApp() {
