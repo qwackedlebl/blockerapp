@@ -7,41 +7,62 @@
     app:cardElevation="4dp"
     app:cardCornerRadius="12dp">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <!-- Top Row: Partner Name and Super Secret Button -->
-        <RelativeLayout
+        <!-- Main Content -->
+        <LinearLayout
+            android:id="@+id/mainContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <TextView
-                android:id="@+id/partnerName"
-                android:layout_width="wrap_content"
+            <!-- Top Row: Partner Name and Settings Button -->
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:text="Partner Name"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black" />
+                android:layout_marginBottom="12dp">
 
-            <ImageButton
-                android:id="@+id/btnSuperSecret"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_dialog_info"
-                android:contentDescription="Super Secret Key"
-                android:tint="#FF5722" />
+                <TextView
+                    android:id="@+id/partnerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="Partner Name"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black" />
 
-        </RelativeLayout>
+                <!-- Settings Button (similar to lock button style) -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSettings"
+                        style="@style/Widget.Material3.Button.IconButton"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:contentDescription="Settings"
+                        app:icon="@android:drawable/ic_menu_preferences"
+                        app:iconTint="@android:color/black"
+                        app:iconGravity="textStart"
+                        android:padding="6dp"
+                        android:insetLeft="0dp"
+                        android:insetRight="0dp"
+                        app:backgroundTint="#E0E0E0"
+                        android:elevation="6dp" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
 
         <!-- TOTP Code and Timer Row -->
         <RelativeLayout
@@ -111,5 +132,94 @@
         </RelativeLayout>
 
     </LinearLayout>
+
+    <!-- Settings Overlay (hidden by default) -->
+    <LinearLayout
+        android:id="@+id/settingsOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@android:color/white"
+        android:padding="16dp"
+        android:visibility="gone">
+
+        <!-- Top Row: Settings gear icon in same position -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="Settings"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
+
+            <!-- Settings Button in same position as main view -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSettingsOverlay"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="Close Settings"
+                app:icon="@android:drawable/ic_menu_preferences"
+                app:iconTint="@android:color/black"
+                app:iconGravity="textStart"
+                android:padding="6dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                app:backgroundTint="#E0E0E0"
+                android:elevation="6dp" />
+
+        </RelativeLayout>
+
+        <!-- Buttons Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- Super Secret Key Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSuperSecretOverlay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Super Secret"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:icon="@android:drawable/ic_dialog_info"
+                app:iconTint="@android:color/white"
+                app:backgroundTint="#FF5722"
+                android:layout_marginEnd="4dp"
+                android:padding="8dp" />
+
+            <!-- Delete Partner Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeletePartner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Delete"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:icon="@android:drawable/ic_menu_delete"
+                app:iconTint="@android:color/white"
+                app:backgroundTint="#D32F2F"
+                android:layout_marginStart="4dp"
+                android:padding="8dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    </FrameLayout>
 
 </com.google.android.material.card.MaterialCardView>

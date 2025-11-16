@@ -138,6 +138,9 @@ class MainActivity : AppCompatActivity() {
             partners = emptyList(),
             onSuperSecretClick = { partner, index ->
                 showSuperSecretDialog(partner)
+            },
+            onDeleteClick = { partner, index ->
+                showDeleteConfirmationDialog(partner)
             }
         )
 
@@ -161,42 +164,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showSuperSecretDialog(partner: SecretKeyEntry) {
-        // Create custom dialog view
-        val dialogView = layoutInflater.inflate(android.R.layout.simple_list_item_1, null)
-        val container = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(50, 50, 50, 50)
-        }
-
-        val titleText = TextView(this).apply {
-            text = "Super Secret Key"
-            textSize = 24f
-            setTextColor(Color.RED)
-            setPadding(0, 0, 0, 20)
-        }
-
-        val warningText = TextView(this).apply {
-            text = "This lets your friend unblock the app forever. Are you sure you wish to proceed?"
-            textSize = 16f
-            setPadding(0, 0, 0, 30)
-        }
-
-        container.addView(titleText)
-        container.addView(warningText)
-
-        val builder = AlertDialog.Builder(this)
-        builder.setView(container)
-        builder.setPositiveButton("Yes") { dialog, _ ->
-            dialog.dismiss()
-            showCalculusProblem(partner)
-        }
-        builder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-        }
-
-        val dialog = builder.create()
-        dialog.window?.setDimAmount(0.8f) // Darken background
-        dialog.show()
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Super Secret Key")
+            .setMessage("This lets ${partner.label} unblock the app forever. Are you sure you want to reveal the Super Secret Key?")
+            .setPositiveButton("Yes, Continue") { dialog, _ ->
+                dialog.dismiss()
+                showCalculusProblem(partner)
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun showCalculusProblem(partner: SecretKeyEntry) {
@@ -284,6 +262,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         builder.create().show()
+    }
+
+    private fun showDeleteConfirmationDialog(partner: SecretKeyEntry) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Delete Partner")
+            .setMessage("Are you sure you want to remove ${partner.label} as a Partner?")
+            .setPositiveButton("Yes, Delete") { dialog, _ ->
+                val success = PreferencesHelper.removeSecretKeyByLabel(partner.label)
+                if (success) {
+                    Toast.makeText(this, "Partner deleted successfully", Toast.LENGTH_SHORT).show()
+                    refreshPartnersList()
+                } else {
+                    Toast.makeText(this, "Failed to delete partner", Toast.LENGTH_SHORT).show()
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun showAddPartnerDialog() {

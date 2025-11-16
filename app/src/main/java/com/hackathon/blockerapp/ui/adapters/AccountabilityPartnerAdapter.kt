@@ -1,5 +1,6 @@
 package com.hackathon.blockerapp.ui.adapters
 
+import android.animation.ObjectAnimator
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
@@ -15,11 +16,13 @@ import com.hackathon.blockerapp.utils.TotpManager
 
 class AccountabilityPartnerAdapter(
     private var partners: List<SecretKeyEntry>,
-    private val onSuperSecretClick: (SecretKeyEntry, Int) -> Unit
+    private val onSuperSecretClick: (SecretKeyEntry, Int) -> Unit,
+    private val onDeleteClick: (SecretKeyEntry, Int) -> Unit
 ) : RecyclerView.Adapter<AccountabilityPartnerAdapter.PartnerViewHolder>() {
 
     private var allPartners: List<SecretKeyEntry> = partners
     private var filteredPartners: List<SecretKeyEntry> = partners
+    private val settingsOpenStates = mutableMapOf<String, Boolean>()
 
     private val handler = Handler(Looper.getMainLooper())
     private val updateRunnable = object : Runnable {
@@ -38,7 +41,12 @@ class AccountabilityPartnerAdapter(
         val totpCode: TextView = itemView.findViewById(R.id.totpCode)
         val timerText: TextView = itemView.findViewById(R.id.timerText)
         val timerProgress: ProgressBar = itemView.findViewById(R.id.timerProgress)
-        val btnSuperSecret: ImageButton = itemView.findViewById(R.id.btnSuperSecret)
+        val btnSettings: View = itemView.findViewById(R.id.btnSettings)
+        val mainContent: View = itemView.findViewById(R.id.mainContent)
+        val settingsOverlay: View = itemView.findViewById(R.id.settingsOverlay)
+        val btnSettingsOverlay: View = itemView.findViewById(R.id.btnSettingsOverlay)
+        val btnSuperSecretOverlay: View = itemView.findViewById(R.id.btnSuperSecretOverlay)
+        val btnDeletePartner: View = itemView.findViewById(R.id.btnDeletePartner)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PartnerViewHolder {
@@ -62,9 +70,51 @@ class AccountabilityPartnerAdapter(
         holder.timerProgress.max = 30
         holder.timerProgress.progress = remaining
 
-        // Super Secret button
-        holder.btnSuperSecret.setOnClickListener {
+        // Restore settings overlay state
+        val isSettingsOpen = settingsOpenStates[partner.label] ?: false
+        if (isSettingsOpen) {
+            holder.settingsOverlay.visibility = View.VISIBLE
+        } else {
+            holder.settingsOverlay.visibility = View.GONE
+        }
+
+        // Settings button - toggle overlay with fade animation (both buttons do the same thing)
+        val toggleSettings = {
+            val isCurrentlyOpen = holder.settingsOverlay.visibility == View.VISIBLE
+            settingsOpenStates[partner.label] = !isCurrentlyOpen
+
+            if (!isCurrentlyOpen) {
+                // Opening: fade in only
+                holder.settingsOverlay.visibility = View.VISIBLE
+                holder.settingsOverlay.alpha = 0f
+
+                holder.settingsOverlay.animate()
+                    .alpha(1f)
+                    .setDuration(200)
+                    .start()
+            } else {
+                // Closing: fade out only
+                holder.settingsOverlay.animate()
+                    .alpha(0f)
+                    .setDuration(200)
+                    .withEndAction {
+                        holder.settingsOverlay.visibility = View.GONE
+                    }
+                    .start()
+            }
+        }
+
+        holder.btnSettings.setOnClickListener { toggleSettings() }
+        holder.btnSettingsOverlay.setOnClickListener { toggleSettings() }
+
+        // Super Secret button in overlay
+        holder.btnSuperSecretOverlay.setOnClickListener {
             onSuperSecretClick(partner, position)
+        }
+
+        // Delete partner button
+        holder.btnDeletePartner.setOnClickListener {
+            onDeleteClick(partner, position)
         }
     }
 
