@@ -136,7 +136,7 @@
     <LinearLayout
         android:id="@+id/settingsOverlay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@android:color/white"
         android:padding="16dp"
@@ -177,6 +177,12 @@
 
         </RelativeLayout>
 
+        <!-- Spacer to push buttons to center vertically -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
         <!-- Buttons Row -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -216,13 +222,11 @@
 
         </LinearLayout>
 
-        <!-- Rounded White Border at Bottom -->
+        <!-- Spacer to push buttons to center vertically -->
         <View
             android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_marginTop="12dp"
-            android:background="@android:color/white"
-            android:alpha="0.8" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 
