@@ -27,6 +27,8 @@ import com.hackathon.blockerapp.databinding.ActivityMainBinding
 import com.hackathon.blockerapp.models.SecretKeyEntry
 import com.hackathon.blockerapp.ui.adapters.AccountabilityPartnerAdapter
 import com.hackathon.blockerapp.utils.PreferencesHelper
+import com.hackathon.blockerapp.utils.TotpManager
+import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
 
@@ -164,104 +166,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showSuperSecretDialog(partner: SecretKeyEntry) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Super Secret Key")
-            .setMessage("This lets ${partner.label} unblock the app forever. Are you sure you want to reveal the Super Secret Key?")
-            .setPositiveButton("Yes, Continue") { dialog, _ ->
-                dialog.dismiss()
-                showCalculusProblem(partner)
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .show()
-    }
-
-    private fun showCalculusProblem(partner: SecretKeyEntry) {
-        val container = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(50, 50, 50, 50)
-        }
-
-        val problemText = TextView(this).apply {
-            text = "Solve this calculus problem:\n\n∫(2x³ + 3x²) dx\n\nEnter the result (without +C):"
-            textSize = 16f
-            setPadding(0, 0, 0, 20)
-        }
-
-        val answerInput = EditText(this).apply {
-            hint = "Your answer"
-            setPadding(20, 20, 20, 20)
-        }
-
-        container.addView(problemText)
-        container.addView(answerInput)
-
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Math Challenge")
-        builder.setView(container)
-        builder.setPositiveButton("Submit") { dialog, _ ->
-            val answer = answerInput.text.toString().trim()
-            // Correct answer: (1/2)x^4 + x^3 or 0.5x^4 + x^3
-            if (answer.contains("x^4") && answer.contains("x^3")) {
-                dialog.dismiss()
-                showSuperSecretKey(partner)
-            } else {
-                Toast.makeText(this, "Incorrect answer. Try again.", Toast.LENGTH_SHORT).show()
-            }
-        }
-        builder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-        }
-
-        builder.create().show()
+        showSuperSecretKey(partner)
     }
 
     private fun showSuperSecretKey(partner: SecretKeyEntry) {
-        // Reverse the secret key
-        val reversedKey = partner.secretKey.reversed()
+        // Generate the super secret key using offset function
+        val superSecretKey = TotpManager.generateSuperSecretKey(partner.secretKey)
 
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(50, 50, 50, 50)
+            setPadding(40, 20, 40, 20)
         }
 
-        val titleText = TextView(this).apply {
-            text = "Super Secret Key"
-            textSize = 24f
-            setTextColor(Color.RED)
-            setPadding(0, 0, 0, 20)
+        val descriptionText = TextView(this).apply {
+            text = "Share this key with ${partner.label} to permanently unlock their apps."
+            textSize = 14f
+            setTextColor(ContextCompat.getColor(this@MainActivity, android.R.color.darker_gray))
+            setPadding(0, 0, 0, 16)
         }
 
         val keyText = TextView(this).apply {
-            text = reversedKey
-            textSize = 18f
-            setPadding(20, 20, 20, 20)
+            text = superSecretKey
+            textSize = 20f
+            setPadding(24, 24, 24, 24)
             setBackgroundColor(Color.LTGRAY)
             setTextIsSelectable(true)
+            gravity = android.view.Gravity.CENTER
         }
 
-        val copyButton = Button(this).apply {
-            text = "Copy Key"
-            setOnClickListener {
-                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText("Super Secret Key", reversedKey)
-                clipboard.setPrimaryClip(clip)
-                Toast.makeText(this@MainActivity, "Copied to clipboard", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        container.addView(titleText)
+        container.addView(descriptionText)
         container.addView(keyText)
-        container.addView(copyButton)
 
-        val builder = AlertDialog.Builder(this)
-        builder.setView(container)
-        builder.setPositiveButton("Close") { dialog, _ ->
-            dialog.dismiss()
-        }
-
-        builder.create().show()
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Super Secret Key")
+            .setView(container)
+            .setPositiveButton("Copy Key") { dialog, _ ->
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("Super Secret Key", superSecretKey)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(this, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Close") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun showDeleteConfirmationDialog(partner: SecretKeyEntry) {

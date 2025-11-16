@@ -9,30 +9,50 @@
         android:id="@+id/unlockTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enter 6-digit confirmation code"
+        android:text="Enter Super Secret Key"
         android:textStyle="bold"
         android:textSize="16sp"
+        android:paddingBottom="8dp" />
+
+    <TextView
+        android:id="@+id/unlockDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ask your accountability partner for the Super Secret Key to permanently unlock this app."
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
         android:paddingBottom="12dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/codeInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter 6-digit code">
+        android:hint="Super Secret Key">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/codeInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:maxLength="6"
+            android:inputType="textCapCharacters|textNoSuggestions"
             android:textAlignment="center"
             android:gravity="center"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:importantForAutofill="no"
             android:autofillHints="" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/debugSuperSecretKey"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="12sp"
+        android:textColor="@android:color/holo_blue_dark"
+        android:visibility="visible"
+        android:paddingTop="8dp"
+        android:textAlignment="center"
+        android:gravity="center" />
 
     <TextView
         android:id="@+id/errorText"

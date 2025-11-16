@@ -83,6 +83,7 @@
             android:hint="@string/enter_code"
             android:textAlignment="center"
             android:textSize="24sp"
+            android:textColor="#B0B0B0"
             android:inputType="number"
             android:maxLength="6"
             app:boxBackgroundColor="@android:color/white" />

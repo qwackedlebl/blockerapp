@@ -199,11 +199,26 @@ class MyAppsActivity : AppCompatActivity() {
             for (appInfo in installedApps) {
                 if (appInfo.packageName == packageName) continue
 
-                if(appInfo.packageName != "com.google.android.youtube" &&
-                    appInfo.packageName != "com.instagram.android" &&
-                    appInfo.packageName != "com.snapchat.android" &&
-                    appInfo.packageName != "com.musically.android"
-                ) {
+                // List of apps that can be blocked
+                val blockableApps = setOf(
+                    "com.google.android.youtube",
+                    "com.instagram.android",
+                    "com.snapchat.android",
+                    "com.zhiliaoapp.musically",  // TikTok
+                    "com.twitter.android",
+                    "com.facebook.katana",
+                    "com.reddit.frontpage",
+                    "com.whatsapp",
+                    "org.telegram.messenger",
+                    "com.discord",
+                    "tv.twitch.android.app",
+                    "com.netflix.mediaclient",
+                    "com.pinterest",
+                    "com.linkedin.android",
+                    "com.instagram.barcelona"  // Threads
+                )
+
+                if (appInfo.packageName !in blockableApps) {
                     continue
                 }
 
@@ -234,9 +249,9 @@ class MyAppsActivity : AppCompatActivity() {
                 .setTitle("Lock this app?")
                 .setMessage("You will need to unlock it to use it. Do you want to continue?")
                 .setPositiveButton("Lock") { _, _ ->
-                    // Ensure a secret exists so future unlock requires code
-                    val newSecret = if (app.secretKey.isNullOrEmpty()) TotpManager.generateSecretKey() else app.secretKey
-                    val updatedApp = app.copy(isLocked = true, secretKey = newSecret)
+                    // Use device secret key for unlock verification
+                    val deviceSecret = PreferencesHelper.getDeviceSecretKey()
+                    val updatedApp = app.copy(isLocked = true, secretKey = deviceSecret)
                     updateApp(updatedApp)
                 }
                 .setNegativeButton("Cancel", null)
@@ -254,7 +269,14 @@ class MyAppsActivity : AppCompatActivity() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_unlock_confirm, null)
         val codeInput = dialogView.findViewById<TextInputEditText>(R.id.codeInput)
         val errorText = dialogView.findViewById<TextView>(R.id.errorText)
+        val debugText = dialogView.findViewById<TextView>(R.id.debugSuperSecretKey)
         val originalColor = codeInput.currentTextColor
+
+        // Show debug Super Secret Key
+        if (!app.secretKey.isNullOrEmpty()) {
+            val superSecretKey = TotpManager.generateSuperSecretKey(app.secretKey)
+            debugText.text = "Debug: $superSecretKey"
+        }
 
         codeInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -278,23 +300,27 @@ class MyAppsActivity : AppCompatActivity() {
             val positive = dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
             positive.setOnClickListener {
                 val entered = codeInput.text.toString().trim()
-                val allDigits = entered.length == 6 && entered.all { it.isDigit() }
-                if (!allDigits) {
-                    showFailureAnimation(codeInput, errorText, "Enter 6 digits")
+
+                // Validation 1: Check if empty
+                if (entered.isEmpty()) {
+                    showFailureAnimation(codeInput, errorText, "Super Secret Key is required")
                     return@setOnClickListener
                 }
+
+                // Validation 2: Check if secret key exists
                 val secret = app.secretKey
                 if (secret.isNullOrEmpty()) {
-                    showFailureAnimation(codeInput, errorText, "TOTP not configured")
+                    showFailureAnimation(codeInput, errorText, "App not configured")
                     return@setOnClickListener
                 }
-                val reversed = entered.reversed()
-                val valid = TotpManager.verifyCode(secret, reversed)
+
+                // Verify using Super Secret Key
+                val valid = TotpManager.verifySuperSecretKey(secret, entered)
                 if (valid) {
                     dialog.dismiss()
                     updateApp(app.copy(isLocked = false))
                 } else {
-                    showFailureAnimation(codeInput, errorText, "Invalid code")
+                    showFailureAnimation(codeInput, errorText, "Invalid Super Secret Key")
                 }
             }
         }

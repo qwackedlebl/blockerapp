@@ -102,5 +102,36 @@ object TotpManager {
         val time = System.currentTimeMillis() / 1000
         return (TIME_STEP - (time % TIME_STEP)).toInt()
     }
+
+    /**
+     * Generate Super Secret Key by offsetting each character by 43 in ASCII
+     * Valid characters: A-Z and 2-7 (Base32 alphabet)
+     * Valid ASCII ranges: A-Z (65-90), 2-7 (50-55)
+     */
+    fun generateSuperSecretKey(secretKey: String): String {
+        val validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+
+        return secretKey.map { char ->
+            val upperChar = char.uppercaseChar()
+            val index = validChars.indexOf(upperChar)
+
+            if (index == -1) {
+                // If character is not in valid set, keep it as-is
+                char
+            } else {
+                // Offset by 43 and modulus to stay within valid character set
+                val newIndex = (index + 43) % validChars.length
+                validChars[newIndex]
+            }
+        }.joinToString("")
+    }
+
+    /**
+     * Verify if the input super secret key matches the expected transformed key
+     */
+    fun verifySuperSecretKey(secretKey: String, inputKey: String): Boolean {
+        val expectedKey = generateSuperSecretKey(secretKey)
+        return expectedKey.equals(inputKey, ignoreCase = true)
+    }
 }
 
