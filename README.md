@@ -1,6 +1,6 @@
 # 🔒 BlockerApp - Android App Locker with TOTP
 
-A hackathon-ready Android application that locks installed apps behind manual or TOTP-based authentication. Built for speed and functionality over security.
+An Android application that locks installed apps behind manual or TOTP-based authentication. Built for speed and functionality over security.
 
 ## 🚀 Features
 
