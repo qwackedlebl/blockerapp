@@ -64,4 +64,3 @@ class MyAppsActivity : AppCompatActivity() {
         return true
     }
 }
-

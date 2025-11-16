@@ -3,14 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardElevation="2dp">
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    app:cardElevation="2dp"
+    app:cardUseCompatPadding="true"
+    android:clipToPadding="false"
+    android:clipChildren="false">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:paddingEnd="24dp"
+        android:clipToPadding="false"
+        android:clipChildren="false">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -37,16 +48,6 @@
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/totpIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="8dp"
-            android:contentDescription="@string/totp_status"
-            android:src="@drawable/ic_lock_open"
-            android:visibility="visible" />
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/totpButton"
             style="@style/Widget.Material3.Button.IconButton"
@@ -58,13 +59,25 @@
             android:visibility="gone"
             app:icon="@drawable/ic_settings" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/lockSwitch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical" />
+        <!-- Clickable MaterialButton showing lock/unlock icon inside a gray button with shadow -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/lockButton"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/lock_state"
+            app:icon="@drawable/ic_lock_open"
+            app:iconTint="@android:color/black"
+            app:iconGravity="textStart"
+            android:padding="6dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            app:backgroundTint="#E0E0E0"
+            android:elevation="6dp"
+            android:backgroundTintMode="src_over" />
 
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
-
