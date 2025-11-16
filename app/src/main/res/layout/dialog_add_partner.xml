@@ -17,7 +17,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enter your friend's name and their device secret key. They will generate codes to unlock your apps."
+        android:text="Enter your partner's name and their device secret key. They will generate codes to unlock your apps."
         android:textSize="14sp"
         android:textColor="@android:color/darker_gray"
         android:paddingBottom="8dp" />
@@ -34,7 +34,7 @@
             android:id="@+id/nameInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Partner Name"
+            android:hint="Partner's Name"
             android:inputType="textPersonName" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -51,7 +51,7 @@
             android:id="@+id/secretKeyInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Friend's Secret Key"
+            android:hint="Partner's Secret Key"
             android:inputType="textNoSuggestions|textCapCharacters" />
 
     </com.google.android.material.textfield.TextInputLayout>
