@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RotLocker - Accountability Partner App Blocker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .tagline {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            margin-bottom: 30px;
+        }
+
+        .hero-section {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            margin: 30px 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 18px 45px;
+            font-size: 1.2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            transition: all 0.3s ease;
+            margin: 20px 0;
+        }
+
+        .download-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .feature-desc {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .how-it-works {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            margin: 30px 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .how-it-works h2 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+
+        .steps {
+            display: grid;
+            gap: 25px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .step-content p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .version-info {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            opacity: 0.9;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: white;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+
+            .hero-section, .how-it-works {
+                padding: 30px 20px;
+            }
+
+            .tagline {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🔒 RotLocker</div>
+            <div class="tagline">Stay Accountable. Block Distractions. Build Better Habits.</div>
+        </header>
+
+        <div class="hero-section">
+            <div style="text-align: center;">
+                <h1 style="color: #667eea; font-size: 2.2rem; margin-bottom: 20px;">
+                    Take Control of Your Digital Life
+                </h1>
+                <p style="font-size: 1.1rem; color: #666; max-width: 700px; margin: 0 auto 30px;">
+                    RotLocker is an accountability-based app blocker for Android. Partner with a friend to block
+                    distracting apps like Instagram, TikTok, YouTube, and more. Only your accountability partner
+                    can unlock them.
+                </p>
+
+                <a href="rotlocker.apk" class="download-btn" download>
+                    📱 Download RotLocker APK
+                </a>
+
+                <p style="color: #999; margin-top: 15px; font-size: 0.9rem;">
+                    Version 1.0.0 • Android 7.0+ • Free & Open Source
+                </p>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🤝</div>
+                <div class="feature-title">Accountability Partners</div>
+                <div class="feature-desc">
+                    Share your device secret key with a trusted friend. They hold the power to help you unlock apps.
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <div class="feature-title">Time-Based Codes</div>
+                <div class="feature-desc">
+                    Uses TOTP (Time-based One-Time Passwords) that change every 30 seconds for secure unlocking.
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">Block Popular Apps</div>
+                <div class="feature-desc">
+                    Block YouTube, Instagram, TikTok, Snapchat, Twitter, Facebook, Reddit, and many more distracting apps.
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⏰</div>
+                <div class="feature-title">Temporary Unlock</div>
+                <div class="feature-desc">
+                    Need quick access? Unlock apps temporarily for 5 minutes without bothering your accountability partner.
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔑</div>
+                <div class="feature-title">Super Secret Key</div>
+                <div class="feature-desc">
+                    For permanent unlocking, your partner can share a Super Secret Key that removes the block entirely.
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <div class="feature-title">Privacy First</div>
+                <div class="feature-desc">
+                    All data stays on your device. No cloud servers, no tracking, no data collection whatsoever.
+                </div>
+            </div>
+        </div>
+
+        <div class="how-it-works">
+            <h2>How It Works</h2>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Download & Install</h3>
+                        <p>Download the APK and install it on your Android device. Grant the necessary permissions (Accessibility, Overlay, Usage Access).</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Get Your Secret Key</h3>
+                        <p>Your device automatically generates a unique secret key. Find it in "My Secret Key" section.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Share With Your Partner</h3>
+                        <p>Give your secret key to a trusted friend who will be your accountability partner. They'll add it to their RotLocker app.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Lock Distracting Apps</h3>
+                        <p>Go to "My Apps" and toggle the lock switch for any apps you want to block (Instagram, TikTok, YouTube, etc.).</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Stay Accountable</h3>
+                        <p>When you try to open a locked app, you'll need a code from your accountability partner or the Super Secret Key to unlock it permanently.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="version-info">
+            <h3 style="margin-bottom: 15px;">Installation Instructions</h3>
+            <p>📌 You'll need to enable "Install from Unknown Sources" in your Android settings</p>
+            <p>⚙️ After installation, grant Accessibility Service, Overlay Permission, and Usage Access</p>
+            <p>🔒 These permissions are required for the app to detect and block apps</p>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 RotLocker. Built for accountability, designed for focus.</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Open Source • Privacy Focused • No Ads</p>
+        </footer>
+    </div>
+</body>
+</html>
