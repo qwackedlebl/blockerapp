@@ -168,7 +168,7 @@ class MyAppsActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this)
             .setTitle("Permissions Required (${missingPermissions.size})")
             .setMessage(
-                "BlockerApp needs the following permissions:\n\n" +
+                "Rotlocker needs the following permissions:\n\n" +
                         missingPermissions.joinToString("\n• ", "• ") +
                         "\n\nYou will be guided through each permission."
             )
