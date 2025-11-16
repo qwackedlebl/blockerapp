@@ -38,7 +38,8 @@
             android:launchMode="singleInstance"
             android:noHistory="true"
             android:taskAffinity=""
-            android:theme="@style/Theme.BlockerApp.Fullscreen" />
+            android:theme="@style/Theme.BlockerApp.Fullscreen"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- TOTP Activity -->
         <activity
