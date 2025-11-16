@@ -149,11 +149,13 @@ class MyAppsActivity : AppCompatActivity() {
         val hasAccessibility = PermissionHelper.isAccessibilityServiceEnabled(this)
         val hasUsageAccess = PermissionHelper.hasUsageAccessPermission(this)
 
-        binding.permissionStatus.text = buildString {
-            append("Status: ")
-            if (hasOverlay && hasAccessibility && hasUsageAccess) {
-                append("✓ All permissions granted")
-            } else {
+        if (hasOverlay && hasAccessibility && hasUsageAccess) {
+            // Hide the permission status card if all permissions are granted
+            binding.permissionStatusCard.visibility = View.GONE
+        } else {
+            // Show the permission status card if any permissions are missing
+            binding.permissionStatusCard.visibility = View.VISIBLE
+            binding.permissionStatus.text = buildString {
                 append("⚠ Missing permissions")
                 if (!hasUsageAccess) append("\n• Usage Access")
                 if (!hasOverlay) append("\n• Overlay permission")
@@ -247,7 +249,7 @@ class MyAppsActivity : AppCompatActivity() {
             // Confirm before locking an app
             MaterialAlertDialogBuilder(this)
                 .setTitle("Lock this app?")
-                .setMessage("You will need to unlock it to use it. Do you want to continue?")
+                .setMessage("You will need the help of a friend to unlock this. Do you want to continue?")
                 .setPositiveButton("Lock") { _, _ ->
                     // Use device secret key for unlock verification
                     val deviceSecret = PreferencesHelper.getDeviceSecretKey()

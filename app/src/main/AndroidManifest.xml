@@ -69,7 +69,7 @@
         <activity
             android:name=".ui.DeviceSecretActivity"
             android:exported="false"
-            android:label="Device Secret Key" />
+            android:label="My Secret Key" />
 
         <!-- Add Partner Activity -->
         <activity

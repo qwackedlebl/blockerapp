@@ -108,7 +108,7 @@ object PreferencesHelper {
         return removed
     }
 
-    // ==================== Device Secret Key (Write Once) ====================
+    // ==================== My Secret Key (Write Once) ====================
 
     /**
      * Get the device-specific secret key

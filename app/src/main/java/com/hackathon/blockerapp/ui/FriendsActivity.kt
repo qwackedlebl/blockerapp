@@ -88,7 +88,7 @@ class FriendsActivity : AppCompatActivity() {
         binding.btnCopySecret.setOnClickListener {
             deviceSecret?.let { secret ->
                 val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText("Device Secret Key", secret)
+                val clip = ClipData.newPlainText("My Secret Key", secret)
                 clipboard.setPrimaryClip(clip)
                 Toast.makeText(this, "Secret key copied to clipboard", Toast.LENGTH_SHORT).show()
             }

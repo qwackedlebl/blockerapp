@@ -206,7 +206,7 @@
             android:id="@+id/nav_device_secret"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Device Secret Key"
+            android:text="My Secret Key"
             android:textSize="16sp"
             android:padding="12dp"
             android:clickable="true"

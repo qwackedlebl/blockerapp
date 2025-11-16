@@ -41,12 +41,14 @@
 
         <!-- Permission Status Card -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/permissionStatusCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardElevation="2dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="8dp"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/permissionStatus"
@@ -127,7 +129,7 @@
             android:id="@+id/nav_device_secret"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Device Secret Key"
+            android:text="My Secret Key"
             android:textSize="16sp"
             android:padding="12dp"
             android:clickable="true"
