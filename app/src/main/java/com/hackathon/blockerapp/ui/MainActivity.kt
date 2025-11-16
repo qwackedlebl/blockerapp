@@ -1,26 +1,31 @@
 package com.hackathon.blockerapp.ui
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.SearchView
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hackathon.blockerapp.databinding.ActivityMainBinding
-import com.hackathon.blockerapp.models.LockedApp
-import com.hackathon.blockerapp.ui.adapters.AppListAdapter
-import com.hackathon.blockerapp.utils.PermissionHelper
+import com.hackathon.blockerapp.models.SecretKeyEntry
+import com.hackathon.blockerapp.ui.adapters.AccountabilityPartnerAdapter
 import com.hackathon.blockerapp.utils.PreferencesHelper
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var adapter: AppListAdapter
-    private var allApps = mutableListOf<LockedApp>()
+    private lateinit var adapter: AccountabilityPartnerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,13 +33,38 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         PreferencesHelper.init(this)
-        verifyAccessibilityFramework()
 
         setupToolbar()
-        setupRecyclerView()
-        loadInstalledApps()
+        setupDrawer()
+        setupPartnersList()
+    }
 
-        // Set drawer width to ~85% of screen width so it covers most of the screen but leaves tappable space
+    override fun onResume() {
+        super.onResume()
+        refreshPartnersList()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::adapter.isInitialized) {
+            adapter.cleanup()
+        }
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.title = "Accountability Partners"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(android.R.drawable.ic_menu_sort_by_size)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        binding.drawerLayout.openDrawer(GravityCompat.START)
+        return true
+    }
+
+    private fun setupDrawer() {
+        // Set drawer width to ~85% of screen width
         binding.leftDrawer.post {
             val displayMetrics = resources.displayMetrics
             val width = (displayMetrics.widthPixels * 0.85).toInt()
@@ -42,219 +72,172 @@ class MainActivity : AppCompatActivity() {
             binding.leftDrawer.requestLayout()
         }
 
-        // Menu button opens the start drawer
-        binding.btnMenu.setOnClickListener {
-            binding.drawerLayout.openDrawer(GravityCompat.START)
+        binding.navMyApps.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, MyAppsActivity::class.java))
         }
 
-        // Top search view filters the adapter
-        binding.topSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                adapter.filter.filter(newText)
-                return true
-            }
-        })
-
-        // Drawer navigation links
-        binding.navMyApps.setOnClickListener {
-            // Return to the initial list: close drawer, clear search, and scroll to top
+        binding.navManagePartners.setOnClickListener {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
-            binding.topSearchView.setQuery("", false)
-            binding.topSearchView.clearFocus()
-            binding.recyclerView.scrollToPosition(0)
+            startActivity(Intent(this, FriendsActivity::class.java))
         }
 
         binding.navHowItWorks.setOnClickListener {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
-            startActivity(Intent(this, com.hackathon.blockerapp.ui.HowItWorksActivity::class.java))
+            startActivity(Intent(this, HowItWorksActivity::class.java))
         }
     }
 
-    private fun verifyAccessibilityFramework() {
-        Log.d("AccessibilityVerification", "--- QUERYING PACKAGE MANAGER FOR ACCESSIBILITY SERVICES ---")
-        val packageManager = packageManager
-        val intent = Intent("android.accessibility.AccessibilityService")
-        val serviceInfos = packageManager.queryIntentServices(intent, PackageManager.MATCH_ALL)
-        if (serviceInfos.isEmpty()) {
-            Log.e("AccessibilityVerification", "CRITICAL: No services on the device can handle the AccessibilityService intent.")
-        } else {
-            Log.d("AccessibilityVerification", "Found ${serviceInfos.size} services capable of being an Accessibility Service:")
-            for (info in serviceInfos) {
-                Log.d("AccessibilityVerification", "  - Service: ${info.serviceInfo.name}, Package: ${info.serviceInfo.packageName}")
-            }
-        }
-        Log.d("AccessibilityVerification", "---------------------------------------------------------")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        checkPermissions()
-        updatePermissionStatus()
-    }
-
-    private fun setupToolbar() {
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.title = "BlockerApp"
-    }
-
-    private fun setupRecyclerView() {
-        adapter = AppListAdapter(
-            apps = emptyList(),
-            onLockToggle = { app, isLocked ->
-                handleLockToggle(app, isLocked)
-            },
-            onTotpClick = { app ->
-                handleTotpClick(app)
+    private fun setupPartnersList() {
+        adapter = AccountabilityPartnerAdapter(
+            partners = emptyList(),
+            onSuperSecretClick = { partner, index ->
+                showSuperSecretDialog(partner)
             }
         )
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = adapter
+        binding.partnersRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.partnersRecyclerView.adapter = adapter
+
+        refreshPartnersList()
     }
 
-    private fun checkPermissions() {
-        val missingPermissions = mutableListOf<String>()
+    private fun refreshPartnersList() {
+        val partners = PreferencesHelper.getSecretKeys()
 
-        if (!PermissionHelper.hasUsageAccessPermission(this)) {
-            missingPermissions.add("Usage Access")
-        }
-        if (!PermissionHelper.hasOverlayPermission(this)) {
-            missingPermissions.add("Overlay Permission")
-        }
-        if (!PermissionHelper.isAccessibilityServiceEnabled(this)) {
-            missingPermissions.add("Accessibility Service")
-        }
-
-        if (missingPermissions.isNotEmpty()) {
-            showPermissionDialog(missingPermissions)
-        }
-    }
-
-    private fun updatePermissionStatus() {
-        val hasOverlay = PermissionHelper.hasOverlayPermission(this)
-        val hasAccessibility = PermissionHelper.isAccessibilityServiceEnabled(this)
-        val hasUsageAccess = PermissionHelper.hasUsageAccessPermission(this)
-
-        Log.d("MainActivity", "Overlay permission: $hasOverlay")
-        Log.d("MainActivity", "Accessibility service enabled: $hasAccessibility")
-        Log.d("MainActivity", "Usage access permission: $hasUsageAccess")
-
-        binding.permissionStatus.text = buildString {
-            append("Status: ")
-            if (hasOverlay && hasAccessibility && hasUsageAccess) {
-                append("✓ All permissions granted")
-            } else {
-                append("⚠ Missing permissions")
-                if (!hasUsageAccess) append("\n• Usage Access")
-                if (!hasOverlay) append("\n• Overlay permission")
-                if (!hasAccessibility) append("\n• Accessibility service")
-            }
-        }
-    }
-
-    private fun showPermissionDialog(missingPermissions: List<String>) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Permissions Required (${missingPermissions.size})")
-            .setMessage(
-                "BlockerApp needs the following permissions:\n\n" +
-                        missingPermissions.joinToString("\n• ", "• ") +
-                        "\n\nYou will be guided through each permission."
-            )
-            .setPositiveButton("Start Setup") { _, _ ->
-                requestNextPermission(missingPermissions)
-            }
-            .setNegativeButton("Later", null)
-            .setCancelable(false)
-            .show()
-    }
-
-    private fun requestNextPermission(missingPermissions: List<String>) {
-        when (missingPermissions.firstOrNull()) {
-            "Usage Access" -> PermissionHelper.requestUsageAccessPermission(this)
-            "Overlay Permission" -> PermissionHelper.requestOverlayPermission(this)
-            "Accessibility Service" -> PermissionHelper.requestAccessibilityPermission(this)
-        }
-    }
-
-    private fun loadInstalledApps() {
-        binding.progressBar.visibility = View.VISIBLE
-
-        Thread {
-            val packageManager = packageManager
-            val installedApps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-            val savedApps = PreferencesHelper.getLockedApps().associateBy { it.packageName }
-
-            allApps.clear()
-
-            for (appInfo in installedApps) {
-                if (appInfo.packageName == packageName) continue
-
-                if(appInfo.packageName != "com.google.android.youtube" &&
-                    appInfo.packageName != "com.instagram.android" &&
-                    appInfo.packageName != "com.snapchat.android" &&
-                    appInfo.packageName != "com.musically.android"
-                ) {
-                    continue
-                }
-
-
-                val appName = packageManager.getApplicationLabel(appInfo).toString()
-                val packageName = appInfo.packageName
-
-                val lockedApp = savedApps[packageName] ?: LockedApp(
-                    packageName = packageName,
-                    appName = appName
-                )
-
-                allApps.add(lockedApp)
-            }
-
-            allApps.sortBy { it.appName.lowercase() }
-
-            runOnUiThread {
-                adapter.updateApps(allApps)
-                binding.progressBar.visibility = View.GONE
-            }
-        }.start()
-    }
-
-    private fun handleLockToggle(app: LockedApp, isLocked: Boolean) {
-        val updatedApp = app.copy(isLocked = isLocked)
-        updateApp(updatedApp)
-    }
-
-    private fun handleTotpClick(app: LockedApp) {
-        val intent = Intent(this, TotpActivity::class.java).apply {
-            putExtra("package_name", app.packageName)
-            putExtra("app_name", app.appName)
-            putExtra("secret_key", app.secretKey)
-            putExtra("totp_enabled", app.isTotpEnabled)
-        }
-        startActivity(intent)
-    }
-
-    private fun updateApp(updatedApp: LockedApp) {
-        val index = allApps.indexOfFirst { it.packageName == updatedApp.packageName }
-        if (index != -1) {
-            allApps[index] = updatedApp
-        }
-
-        val savedApps = PreferencesHelper.getLockedApps().toMutableList()
-        val savedIndex = savedApps.indexOfFirst { it.packageName == updatedApp.packageName }
-
-        if (savedIndex != -1) {
-            savedApps[savedIndex] = updatedApp
+        if (partners.isEmpty()) {
+            binding.emptyStateText.visibility = View.VISIBLE
+            binding.partnersRecyclerView.visibility = View.GONE
         } else {
-            savedApps.add(updatedApp)
+            binding.emptyStateText.visibility = View.GONE
+            binding.partnersRecyclerView.visibility = View.VISIBLE
+            adapter.updatePartners(partners)
         }
-
-        PreferencesHelper.saveLockedApps(savedApps)
-
-        adapter.updateApps(allApps)
     }
 
+    private fun showSuperSecretDialog(partner: SecretKeyEntry) {
+        // Create custom dialog view
+        val dialogView = layoutInflater.inflate(android.R.layout.simple_list_item_1, null)
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(50, 50, 50, 50)
+        }
+
+        val titleText = TextView(this).apply {
+            text = "Super Secret Key"
+            textSize = 24f
+            setTextColor(Color.RED)
+            setPadding(0, 0, 0, 20)
+        }
+
+        val warningText = TextView(this).apply {
+            text = "This lets your friend unblock the app forever. Are you sure you wish to proceed?"
+            textSize = 16f
+            setPadding(0, 0, 0, 30)
+        }
+
+        container.addView(titleText)
+        container.addView(warningText)
+
+        val builder = AlertDialog.Builder(this)
+        builder.setView(container)
+        builder.setPositiveButton("Yes") { dialog, _ ->
+            dialog.dismiss()
+            showCalculusProblem(partner)
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.window?.setDimAmount(0.8f) // Darken background
+        dialog.show()
+    }
+
+    private fun showCalculusProblem(partner: SecretKeyEntry) {
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(50, 50, 50, 50)
+        }
+
+        val problemText = TextView(this).apply {
+            text = "Solve this calculus problem:\n\n∫(2x³ + 3x²) dx\n\nEnter the result (without +C):"
+            textSize = 16f
+            setPadding(0, 0, 0, 20)
+        }
+
+        val answerInput = EditText(this).apply {
+            hint = "Your answer"
+            setPadding(20, 20, 20, 20)
+        }
+
+        container.addView(problemText)
+        container.addView(answerInput)
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Math Challenge")
+        builder.setView(container)
+        builder.setPositiveButton("Submit") { dialog, _ ->
+            val answer = answerInput.text.toString().trim()
+            // Correct answer: (1/2)x^4 + x^3 or 0.5x^4 + x^3
+            if (answer.contains("x^4") && answer.contains("x^3")) {
+                dialog.dismiss()
+                showSuperSecretKey(partner)
+            } else {
+                Toast.makeText(this, "Incorrect answer. Try again.", Toast.LENGTH_SHORT).show()
+            }
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.create().show()
+    }
+
+    private fun showSuperSecretKey(partner: SecretKeyEntry) {
+        // Reverse the secret key
+        val reversedKey = partner.secretKey.reversed()
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(50, 50, 50, 50)
+        }
+
+        val titleText = TextView(this).apply {
+            text = "Super Secret Key"
+            textSize = 24f
+            setTextColor(Color.RED)
+            setPadding(0, 0, 0, 20)
+        }
+
+        val keyText = TextView(this).apply {
+            text = reversedKey
+            textSize = 18f
+            setPadding(20, 20, 20, 20)
+            setBackgroundColor(Color.LTGRAY)
+            setTextIsSelectable(true)
+        }
+
+        val copyButton = Button(this).apply {
+            text = "Copy Key"
+            setOnClickListener {
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("Super Secret Key", reversedKey)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(this@MainActivity, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        container.addView(titleText)
+        container.addView(keyText)
+        container.addView(copyButton)
+
+        val builder = AlertDialog.Builder(this)
+        builder.setView(container)
+        builder.setPositiveButton("Close") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.create().show()
+    }
 }

@@ -58,6 +58,12 @@
             android:exported="false"
             android:label="How It Works" />
 
+        <!-- Friends Activity -->
+        <activity
+            android:name=".ui.FriendsActivity"
+            android:exported="false"
+            android:label="Accountability Partners" />
+
         <!-- Accessibility Service -->
         <service
             android:name=".service.AppBlockerAccessibilityService"
