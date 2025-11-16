@@ -18,7 +18,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
-            app:title="Manage Partners" />
+            app:title="Manage Partners"
+            app:titleTextColor="@android:color/white" />
 
         <!-- Scrollable Content -->
         <ScrollView
@@ -278,7 +279,8 @@
             android:textSize="16sp"
             android:padding="12dp"
             android:clickable="true"
-            android:foreground="?attr/selectableItemBackground" />
+            android:foreground="?attr/selectableItemBackground"
+            android:visibility="gone" />
 
         <View
             android:layout_width="match_parent"

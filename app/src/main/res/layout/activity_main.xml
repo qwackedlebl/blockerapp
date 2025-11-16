@@ -23,7 +23,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
-            app:title="Accountability Partners" />
+            app:title="Accountability Partners"
+            app:titleTextColor="@android:color/white" />
 
         <!-- Search Bar -->
         <com.google.android.material.card.MaterialCardView
@@ -72,8 +73,9 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:orientation="vertical"
-        android:background="@android:color/white"
-        android:padding="24dp">
+        android:background="@drawable/drawer_background"
+        android:padding="24dp"
+        android:layout_margin="8dp">
 
         <TextView
             android:id="@+id/drawer_title"
@@ -128,7 +130,8 @@
             android:textSize="16sp"
             android:padding="12dp"
             android:clickable="true"
-            android:foreground="?attr/selectableItemBackground" />
+            android:foreground="?attr/selectableItemBackground"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/nav_how_it_works"
@@ -138,7 +141,8 @@
             android:textSize="16sp"
             android:padding="12dp"
             android:clickable="true"
-            android:foreground="?attr/selectableItemBackground" />
+            android:foreground="?attr/selectableItemBackground"
+            android:visibility="gone" />
 
         <!-- Spacer to push items to top -->
         <View

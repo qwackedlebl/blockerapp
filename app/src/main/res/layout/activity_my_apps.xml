@@ -18,7 +18,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
-            app:title="My Apps" />
+            app:title="My Apps"
+            app:titleTextColor="@android:color/white" />
 
         <!-- Search Bar -->
         <com.google.android.material.card.MaterialCardView
@@ -140,7 +141,8 @@
             android:textSize="16sp"
             android:padding="12dp"
             android:clickable="true"
-            android:foreground="?attr/selectableItemBackground" />
+            android:foreground="?attr/selectableItemBackground"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/nav_how_it_works"
@@ -150,7 +152,8 @@
             android:textSize="16sp"
             android:padding="12dp"
             android:clickable="true"
-            android:foreground="?attr/selectableItemBackground" />
+            android:foreground="?attr/selectableItemBackground"
+            android:visibility="gone" />
 
         <View
             android:layout_width="match_parent"
