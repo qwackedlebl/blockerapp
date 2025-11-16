@@ -46,6 +46,18 @@
             android:exported="false"
             android:label="@string/totp_title" />
 
+        <!-- My Apps Activity -->
+        <activity
+            android:name=".ui.MyAppsActivity"
+            android:exported="false"
+            android:label="My Apps" />
+
+        <!-- How It Works Activity -->
+        <activity
+            android:name=".ui.HowItWorksActivity"
+            android:exported="false"
+            android:label="How It Works" />
+
         <!-- Accessibility Service -->
         <service
             android:name=".service.AppBlockerAccessibilityService"
@@ -62,4 +74,3 @@
     </application>
 
 </manifest>
-

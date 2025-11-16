@@ -1,17 +1,15 @@
 package com.hackathon.blockerapp.ui
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.accessibility.AccessibilityManager
+import android.view.View
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.hackathon.blockerapp.R
 import com.hackathon.blockerapp.databinding.ActivityMainBinding
 import com.hackathon.blockerapp.models.LockedApp
 import com.hackathon.blockerapp.ui.adapters.AppListAdapter
@@ -36,13 +34,48 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         loadInstalledApps()
 
-        binding.fabTotp.setOnClickListener {
-            startActivity(Intent(this, TotpActivity::class.java))
+        // Set drawer width to ~85% of screen width so it covers most of the screen but leaves tappable space
+        binding.leftDrawer.post {
+            val displayMetrics = resources.displayMetrics
+            val width = (displayMetrics.widthPixels * 0.85).toInt()
+            binding.leftDrawer.layoutParams.width = width
+            binding.leftDrawer.requestLayout()
+        }
+
+        // Menu button opens the start drawer
+        binding.btnMenu.setOnClickListener {
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+
+        // Top search view filters the adapter
+        binding.topSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter.filter(newText)
+                return true
+            }
+        })
+
+        // Drawer navigation links
+        binding.navMyApps.setOnClickListener {
+            // Return to the initial list: close drawer, clear search, and scroll to top
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            binding.topSearchView.setQuery("", false)
+            binding.topSearchView.clearFocus()
+            binding.recyclerView.scrollToPosition(0)
+        }
+
+        binding.navHowItWorks.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, com.hackathon.blockerapp.ui.HowItWorksActivity::class.java))
         }
     }
 
     private fun verifyAccessibilityFramework() {
-        Log.d("AccessibilityVerification", "--- QUERYING PACKAGE MANAGER FOR ACCESSIBILITY SERVICES ---");
+        Log.d("AccessibilityVerification", "--- QUERYING PACKAGE MANAGER FOR ACCESSIBILITY SERVICES ---")
         val packageManager = packageManager
         val intent = Intent("android.accessibility.AccessibilityService")
         val serviceInfos = packageManager.queryIntentServices(intent, PackageManager.MATCH_ALL)
@@ -54,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d("AccessibilityVerification", "  - Service: ${info.serviceInfo.name}, Package: ${info.serviceInfo.packageName}")
             }
         }
-        Log.d("AccessibilityVerification", "---------------------------------------------------------");
+        Log.d("AccessibilityVerification", "---------------------------------------------------------")
     }
 
     override fun onResume() {
@@ -148,7 +181,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadInstalledApps() {
-        binding.progressBar.visibility = android.view.View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
 
         Thread {
             val packageManager = packageManager
@@ -184,7 +217,7 @@ class MainActivity : AppCompatActivity() {
 
             runOnUiThread {
                 adapter.updateApps(allApps)
-                binding.progressBar.visibility = android.view.View.GONE
+                binding.progressBar.visibility = View.GONE
             }
         }.start()
     }
@@ -224,23 +257,4 @@ class MainActivity : AppCompatActivity() {
         adapter.updateApps(allApps)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-
-        val searchItem = menu.findItem(R.id.action_search)
-        val searchView = searchItem.actionView as SearchView
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                adapter.filter.filter(newText)
-                return true
-            }
-        })
-
-        return true
-    }
 }
