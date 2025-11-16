@@ -18,6 +18,9 @@ class AccountabilityPartnerAdapter(
     private val onSuperSecretClick: (SecretKeyEntry, Int) -> Unit
 ) : RecyclerView.Adapter<AccountabilityPartnerAdapter.PartnerViewHolder>() {
 
+    private var allPartners: List<SecretKeyEntry> = partners
+    private var filteredPartners: List<SecretKeyEntry> = partners
+
     private val handler = Handler(Looper.getMainLooper())
     private val updateRunnable = object : Runnable {
         override fun run() {
@@ -45,7 +48,7 @@ class AccountabilityPartnerAdapter(
     }
 
     override fun onBindViewHolder(holder: PartnerViewHolder, position: Int) {
-        val partner = partners[position]
+        val partner = filteredPartners[position]
 
         holder.partnerName.text = partner.label
 
@@ -65,10 +68,22 @@ class AccountabilityPartnerAdapter(
         }
     }
 
-    override fun getItemCount(): Int = partners.size
+    override fun getItemCount(): Int = filteredPartners.size
 
     fun updatePartners(newPartners: List<SecretKeyEntry>) {
-        partners = newPartners
+        allPartners = newPartners
+        filteredPartners = newPartners
+        notifyDataSetChanged()
+    }
+
+    fun filter(query: String?) {
+        filteredPartners = if (query.isNullOrEmpty()) {
+            allPartners
+        } else {
+            allPartners.filter { partner ->
+                partner.label.contains(query, ignoreCase = true)
+            }
+        }
         notifyDataSetChanged()
     }
 

@@ -64,6 +64,18 @@
             android:exported="false"
             android:label="Accountability Partners" />
 
+        <!-- Device Secret Activity -->
+        <activity
+            android:name=".ui.DeviceSecretActivity"
+            android:exported="false"
+            android:label="Device Secret Key" />
+
+        <!-- Add Partner Activity -->
+        <activity
+            android:name=".ui.AddPartnerActivity"
+            android:exported="false"
+            android:label="Add Partner" />
+
         <!-- Accessibility Service -->
         <service
             android:name=".service.AppBlockerAccessibilityService"

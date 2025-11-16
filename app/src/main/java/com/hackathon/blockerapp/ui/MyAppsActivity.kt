@@ -72,9 +72,15 @@ class MyAppsActivity : AppCompatActivity() {
             // Already on this page
         }
 
-        binding.navManagePartners.setOnClickListener {
+        binding.navDeviceSecret.setOnClickListener {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
-            startActivity(Intent(this, FriendsActivity::class.java))
+            startActivity(Intent(this, DeviceSecretActivity::class.java))
+            finish()
+        }
+
+        binding.navAddPartner.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, AddPartnerActivity::class.java))
             finish()
         }
 

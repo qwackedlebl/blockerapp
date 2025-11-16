@@ -123,10 +123,20 @@
             android:foreground="?attr/selectableItemBackground" />
 
         <TextView
-            android:id="@+id/nav_manage_partners"
+            android:id="@+id/nav_device_secret"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Manage Partners"
+            android:text="Device Secret Key"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground" />
+
+        <TextView
+            android:id="@+id/nav_add_partner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Partner"
             android:textSize="16sp"
             android:padding="12dp"
             android:clickable="true"

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         setupToolbar()
         setupDrawer()
+        setupSearch()
         setupPartnersList()
     }
 
@@ -83,9 +85,15 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
-        binding.navManagePartners.setOnClickListener {
+        binding.navDeviceSecret.setOnClickListener {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
-            startActivity(Intent(this, FriendsActivity::class.java))
+            startActivity(Intent(this, DeviceSecretActivity::class.java))
+            finish()
+        }
+
+        binding.navAddPartner.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, AddPartnerActivity::class.java))
             finish()
         }
 
@@ -94,6 +102,19 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, HowItWorksActivity::class.java))
             finish()
         }
+    }
+
+    private fun setupSearch() {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter(newText)
+                return true
+            }
+        })
     }
 
     private fun setupPartnersList() {
