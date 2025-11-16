@@ -47,20 +47,23 @@ class BlockerOverlayActivity : AppCompatActivity() {
         binding.blockedAppName.text = lockedApp.appName
         binding.blockedPackageName.text = lockedApp.packageName
 
-        if (lockedApp.isTotpEnabled && lockedApp.secretKey != null) {
-            // TOTP-protected app
-            setupTotpMode(lockedApp.secretKey)
+        // Get device secret key for TOTP verification
+        val deviceSecret = PreferencesHelper.getDeviceSecretKey()
+
+        if (deviceSecret != null) {
+            // TOTP-protected mode using device secret
+            setupTotpMode(deviceSecret)
         } else {
-            // Manual unlock mode
+            // Fallback to manual unlock if device secret not initialized
             setupManualMode()
         }
     }
 
     private fun setupTotpMode(secretKey: String) {
         binding.totpInputLayout.visibility = android.view.View.VISIBLE
-        binding.manualUnlockButton.visibility = android.view.View.GONE
+        binding.manualUnlockButton.visibility = android.view.View.VISIBLE
 
-        binding.unlockMessage.text = "This app is protected with TOTP.\nEnter the 6-digit code to unlock."
+        binding.unlockMessage.text = "This app is locked.\nEnter the 6-digit code from your accountability partner's device."
 
         // Show current code for debugging (remove in production)
         updateTotpDisplay(secretKey)
