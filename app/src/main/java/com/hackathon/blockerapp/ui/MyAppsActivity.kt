@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hackathon.blockerapp.databinding.ActivityMyAppsBinding
@@ -27,6 +28,7 @@ class MyAppsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupToolbar()
+        setupDrawer()
         setupRecyclerView()
         setupSearch()
         loadInstalledApps()
@@ -40,8 +42,47 @@ class MyAppsActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "My Apps"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(android.R.drawable.ic_menu_sort_by_size)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        binding.drawerLayout.openDrawer(GravityCompat.START)
+        return true
+    }
+
+    private fun setupDrawer() {
+        // Set drawer width
+        binding.leftDrawer.post {
+            val displayMetrics = resources.displayMetrics
+            val width = (displayMetrics.widthPixels * 0.85).toInt()
+            binding.leftDrawer.layoutParams.width = width
+            binding.leftDrawer.requestLayout()
+        }
+
+        binding.navAccountabilityPartners.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+
+        binding.navMyApps.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            // Already on this page
+        }
+
+        binding.navManagePartners.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, FriendsActivity::class.java))
+            finish()
+        }
+
+        binding.navHowItWorks.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, HowItWorksActivity::class.java))
+            finish()
+        }
     }
 
     private fun setupRecyclerView() {
@@ -206,10 +247,5 @@ class MyAppsActivity : AppCompatActivity() {
         PreferencesHelper.saveLockedApps(savedApps)
 
         adapter.updateApps(allApps)
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
     }
 }

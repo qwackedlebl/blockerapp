@@ -3,10 +3,12 @@ package com.hackathon.blockerapp.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hackathon.blockerapp.databinding.ActivityFriendsBinding
 import com.hackathon.blockerapp.ui.adapters.PartnersListAdapter
@@ -28,11 +30,50 @@ class FriendsActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Accountability Partners"
+        supportActionBar?.setHomeAsUpIndicator(android.R.drawable.ic_menu_sort_by_size)
+        supportActionBar?.title = "Manage Partners"
 
+        setupDrawer()
         setupDeviceSecretDisplay()
         setupAddPartnerForm()
         setupPartnersList()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        binding.drawerLayout.openDrawer(GravityCompat.START)
+        return true
+    }
+
+    private fun setupDrawer() {
+        binding.leftDrawer.post {
+            val displayMetrics = resources.displayMetrics
+            val width = (displayMetrics.widthPixels * 0.85).toInt()
+            binding.leftDrawer.layoutParams.width = width
+            binding.leftDrawer.requestLayout()
+        }
+
+        binding.navAccountabilityPartners.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+
+        binding.navMyApps.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, MyAppsActivity::class.java))
+            finish()
+        }
+
+        binding.navManagePartners.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            // Already on this page
+        }
+
+        binding.navHowItWorks.setOnClickListener {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, HowItWorksActivity::class.java))
+            finish()
+        }
     }
 
     private fun setupDeviceSecretDisplay() {
@@ -178,8 +219,5 @@ class FriendsActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
-    }
 }
+
