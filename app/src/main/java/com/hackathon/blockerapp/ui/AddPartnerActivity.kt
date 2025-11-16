@@ -135,7 +135,14 @@ class AddPartnerActivity : AppCompatActivity() {
             return false
         }
 
-        // Validation 4: Check if it's not your own device key
+        // Validation 4: Check minimum length for secret key
+        if (secretKey.length < 16) {
+            binding.secretKeyInputLayout.error = "Secret key too short (minimum 16 characters)"
+            Log.w(TAG, "Secret key too short: ${secretKey.length} characters")
+            return false
+        }
+
+        // Validation 5: Check if it's not your own device key
         val deviceSecret = PreferencesHelper.getDeviceSecretKey()
         if (secretKey.equals(deviceSecret, ignoreCase = true)) {
             binding.secretKeyInputLayout.error = "Cannot add your own device key"
@@ -143,11 +150,18 @@ class AddPartnerActivity : AppCompatActivity() {
             return false
         }
 
-        // Validation 5: Check if this label already exists
+        // Validation 6: Check if this label already exists
         val existingKeys = PreferencesHelper.getSecretKeys()
         if (existingKeys.any { it.label.equals(name, ignoreCase = true) }) {
             binding.nameInputLayout.error = "Partner with this name already exists"
             Log.w(TAG, "Duplicate partner name: $name")
+            return false
+        }
+
+        // Validation 7: Check if this secret key already exists
+        if (existingKeys.any { it.secretKey.equals(secretKey, ignoreCase = true) }) {
+            binding.secretKeyInputLayout.error = "This secret key is already added"
+            Log.w(TAG, "Duplicate secret key")
             return false
         }
 

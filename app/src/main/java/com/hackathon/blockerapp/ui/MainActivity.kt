@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -18,6 +19,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import com.hackathon.blockerapp.R
 import com.hackathon.blockerapp.databinding.ActivityMainBinding
 import com.hackathon.blockerapp.models.SecretKeyEntry
 import com.hackathon.blockerapp.ui.adapters.AccountabilityPartnerAdapter
@@ -27,6 +32,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: AccountabilityPartnerAdapter
+
+    companion object {
+        private const val TAG = "MainActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +48,13 @@ class MainActivity : AppCompatActivity() {
         setupDrawer()
         setupSearch()
         setupPartnersList()
+        setupFab()
+    }
+
+    private fun setupFab() {
+        binding.fabAddPartner.setOnClickListener {
+            showAddPartnerDialog()
+        }
     }
 
     override fun onResume() {
@@ -268,5 +284,121 @@ class MainActivity : AppCompatActivity() {
         }
 
         builder.create().show()
+    }
+
+    private fun showAddPartnerDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_partner, null, false)
+        val nameInputLayout = dialogView.findViewById<TextInputLayout>(R.id.nameInputLayout)
+        val nameInput = dialogView.findViewById<TextInputEditText>(R.id.nameInput)
+        val secretKeyInputLayout = dialogView.findViewById<TextInputLayout>(R.id.secretKeyInputLayout)
+        val secretKeyInput = dialogView.findViewById<TextInputEditText>(R.id.secretKeyInput)
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle("Add Accountability Partner")
+            .setView(dialogView)
+            .setPositiveButton("Save", null)
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+
+        dialog.window?.setDimAmount(0.7f) // Darken background
+        // Prevent dialog from resizing/compressing when keyboard appears
+        dialog.window?.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+
+        dialog.setOnShowListener {
+            val saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            saveButton.setOnClickListener {
+                val name = nameInput.text.toString().trim()
+                val secretKey = secretKeyInput.text.toString().trim()
+
+                if (validateAndSavePartner(name, secretKey, nameInputLayout, secretKeyInputLayout)) {
+                    refreshPartnersList()
+                    Toast.makeText(this, "Partner added successfully!", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun validateAndSavePartner(
+        name: String,
+        secretKey: String,
+        nameInputLayout: TextInputLayout,
+        secretKeyInputLayout: TextInputLayout
+    ): Boolean {
+        // Clear previous errors
+        nameInputLayout.error = null
+        secretKeyInputLayout.error = null
+
+        // Validation 1: Check if fields are empty
+        if (name.isEmpty()) {
+            nameInputLayout.error = "Name is required"
+            return false
+        }
+
+        if (secretKey.isEmpty()) {
+            secretKeyInputLayout.error = "Secret key is required"
+            return false
+        }
+
+        // Validation 2: Check for invalid characters in name
+        val validNamePattern = "^[a-zA-Z0-9 .'\\-]+$".toRegex()
+        if (!name.matches(validNamePattern)) {
+            nameInputLayout.error = "Name contains invalid characters"
+            Log.w(TAG, "Invalid name: $name")
+            return false
+        }
+
+        // Validation 3: Check if secret key is valid Base32 format
+        val validSecretPattern = "^[A-Z2-7]+$".toRegex()
+        if (!secretKey.matches(validSecretPattern)) {
+            secretKeyInputLayout.error = "Invalid secret key format (use A-Z and 2-7)"
+            Log.w(TAG, "Invalid secret key format: $secretKey")
+            return false
+        }
+
+        // Validation 4: Check minimum length for secret key
+        if (secretKey.length < 16) {
+            secretKeyInputLayout.error = "Secret key too short (minimum 16 characters)"
+            Log.w(TAG, "Secret key too short: ${secretKey.length} characters")
+            return false
+        }
+
+        // Validation 5: Check if it's not your own device key
+        val deviceSecret = PreferencesHelper.getDeviceSecretKey()
+        if (secretKey.equals(deviceSecret, ignoreCase = true)) {
+            secretKeyInputLayout.error = "Cannot add your own device key"
+            Log.w(TAG, "Attempted to add own device key")
+            return false
+        }
+
+        // Validation 6: Check if this label already exists
+        val existingKeys = PreferencesHelper.getSecretKeys()
+        if (existingKeys.any { it.label.equals(name, ignoreCase = true) }) {
+            nameInputLayout.error = "Partner with this name already exists"
+            Log.w(TAG, "Duplicate partner name: $name")
+            return false
+        }
+
+        // Validation 7: Check if this secret key already exists
+        if (existingKeys.any { it.secretKey.equals(secretKey, ignoreCase = true) }) {
+            secretKeyInputLayout.error = "This secret key is already added"
+            Log.w(TAG, "Duplicate secret key")
+            return false
+        }
+
+        // All validations passed - save to persistent storage
+        try {
+            PreferencesHelper.appendSecretKey(name, secretKey)
+            Log.d(TAG, "Successfully added partner: $name")
+            return true
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saving partner", e)
+            Toast.makeText(this, "Error saving partner. Please try again.", Toast.LENGTH_SHORT).show()
+            return false
+        }
     }
 }
