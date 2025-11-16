@@ -5,10 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.button.MaterialButton
 import com.hackathon.blockerapp.R
 import com.hackathon.blockerapp.models.LockedApp
 
@@ -23,9 +22,8 @@ class AppListAdapter(
     inner class AppViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val appName: TextView = view.findViewById(R.id.appName)
         val packageName: TextView = view.findViewById(R.id.packageName)
-        val lockSwitch: SwitchMaterial = view.findViewById(R.id.lockSwitch)
+        val lockButton: MaterialButton = view.findViewById(R.id.lockButton)
         val totpButton: View = view.findViewById(R.id.totpButton)
-        val totpIcon: ImageView = view.findViewById(R.id.totpIcon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
@@ -40,24 +38,22 @@ class AppListAdapter(
         holder.appName.text = app.appName
         holder.packageName.text = app.packageName
 
-        // Set lock switch state
-        holder.lockSwitch.setOnCheckedChangeListener(null)
-        holder.lockSwitch.isChecked = app.isLocked
-        holder.lockSwitch.setOnCheckedChangeListener { _, isChecked ->
-            onLockToggle(app, isChecked)
+        // Set lock button icon state (locked/unlocked)
+        if (app.isLocked) {
+            holder.lockButton.icon = holder.itemView.context.getDrawable(R.drawable.ic_lock)
+            holder.lockButton.alpha = 1.0f
+        } else {
+            holder.lockButton.icon = holder.itemView.context.getDrawable(R.drawable.ic_lock_open)
+            holder.lockButton.alpha = 0.8f
+        }
+
+        holder.lockButton.setOnClickListener {
+            val newState = !app.isLocked
+            onLockToggle(app, newState)
         }
 
         // Show TOTP button only if app is locked
         holder.totpButton.visibility = if (app.isLocked) View.VISIBLE else View.GONE
-
-        // Update TOTP icon based on state
-        if (app.isTotpEnabled) {
-            holder.totpIcon.setImageResource(R.drawable.ic_lock)
-            holder.totpButton.alpha = 1.0f
-        } else {
-            holder.totpIcon.setImageResource(R.drawable.ic_lock_open)
-            holder.totpButton.alpha = 0.5f
-        }
 
         holder.totpButton.setOnClickListener {
             onTotpClick(app)
@@ -99,4 +95,3 @@ class AppListAdapter(
         }
     }
 }
-

@@ -20,5 +20,5 @@
     <string name="configure_totp">Configure TOTP</string>
     <string name="action_search">Search</string>
     <string name="accessibility_service_description">BlockerApp uses this service to detect when locked apps are opened and display a blocking screen. No data is collected or transmitted.</string>
+    <string name="lock_state">Lock state</string>
 </resources>
-
