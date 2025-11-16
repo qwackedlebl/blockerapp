@@ -73,7 +73,7 @@ class HowItWorksActivity : AppCompatActivity() {
 
     private fun setupContent() {
         binding.contentText.text = """
-            Rotlocker - Accountability Partner System
+            RotLocker - Accountability Partner System
 
             HOW IT WORKS:
 

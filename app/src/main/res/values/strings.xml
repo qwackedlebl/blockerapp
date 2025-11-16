@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Rotlocker</string>
+    <string name="app_name">RotLocker</string>
     <string name="totp_title">TOTP Manager</string>
     <string name="totp_manager">TOTP Manager</string>
     <string name="app_locked">App Locked</string>
@@ -19,7 +19,7 @@
     <string name="totp_status">TOTP Status</string>
     <string name="configure_totp">Configure TOTP</string>
     <string name="action_search">Search</string>
-    <string name="accessibility_service_description">Rotlocker uses this service to detect when locked apps are opened and display a blocking screen. No data is collected or transmitted.</string>
+    <string name="accessibility_service_description">RotLocker uses this service to detect when locked apps are opened and display a blocking screen. No data is collected or transmitted.</string>
     <string name="lock_state">Lock state</string>
     <string name="calculus_problem_prompt">Solve this calculus problem:\n\n&#8747;(2x&#179; + 3x&#178;) dx\n\nEnter the result (without +C):</string>
 </resources>
