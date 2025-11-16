@@ -117,8 +117,8 @@ class BlockerOverlayActivity : AppCompatActivity() {
                 val code = TotpManager.generateCode(secretKey)
                 val remaining = TotpManager.getRemainingSeconds()
 
-                binding.currentCode.text = "Debug: $code ($remaining s)"
-                binding.currentCode.visibility = android.view.View.VISIBLE
+                //binding.currentCode.text = "Debug: $code ($remaining s)"
+                //binding.currentCode.visibility = android.view.View.VISIBLE
 
                 handler.postDelayed(this, 1000)
             }

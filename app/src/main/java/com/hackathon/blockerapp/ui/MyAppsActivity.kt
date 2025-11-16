@@ -275,10 +275,10 @@ class MyAppsActivity : AppCompatActivity() {
         val originalColor = codeInput.currentTextColor
 
         // Show debug Super Secret Key
-        if (!app.secretKey.isNullOrEmpty()) {
-            val superSecretKey = TotpManager.generateSuperSecretKey(app.secretKey)
-            debugText.text = "Debug: $superSecretKey"
-        }
+        //if (!app.secretKey.isNullOrEmpty()) {
+         //   val superSecretKey = TotpManager.generateSuperSecretKey(app.secretKey)
+        //    debugText.text = "Debug: $superSecretKey"
+       // }
 
         codeInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
